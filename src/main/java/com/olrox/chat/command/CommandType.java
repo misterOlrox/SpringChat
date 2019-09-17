@@ -1,7 +1,7 @@
-package com.olrox.chat.message;
+package com.olrox.chat.command;
 
 public enum CommandType {
-    MESSAGE("/message"),
+    SEND_MESSAGE("/message"),
     REGISTER("/register"),
     LEAVE("/leave"),
     EXIT("/exit");

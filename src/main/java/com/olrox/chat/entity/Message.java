@@ -1,6 +1,5 @@
 package com.olrox.chat.entity;
 
-import com.olrox.chat.message.CommandType;
 import com.olrox.chat.message.author.Author;
 
 import java.time.LocalDateTime;
@@ -9,7 +8,6 @@ public class Message {
     private Author author;
     private String text;
     private LocalDateTime sendTime;
-    private CommandType commandType;
 
     public Message() {
 
@@ -50,15 +48,7 @@ public class Message {
         this.sendTime = sendTime;
     }
 
-    public CommandType getCommandType() {
-        return commandType;
-    }
-
-    public void setCommandType(CommandType commandType) {
-        this.commandType = commandType;
-    }
-
     public String show() {
-        return "[" + author.getUsername() + "] : " + text;
+        return "[" + author.getName() + "] : " + text;
     }
 }

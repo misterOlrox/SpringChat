@@ -1,26 +1,36 @@
-package com.olrox.chat.nio;
+package com.olrox.chat.controller.nio;
 
+import com.olrox.chat.controller.ChatHandler;
 import com.olrox.chat.entity.Message;
-import com.olrox.chat.message.*;
-import com.olrox.chat.user.User;
+import com.olrox.chat.message.MessageReader;
+import com.olrox.chat.message.MessageReaderNio;
+import com.olrox.chat.message.MessageWriter;
+import com.olrox.chat.message.MessageWriterNio;
+import com.olrox.chat.service.CommandParser;
+import com.olrox.chat.service.MessageHandlingService;
+import com.olrox.chat.session.ChatSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 
-public class SocketChannelHandler implements Runnable {
+public class SocketChannelHandler implements Runnable, ChatHandler {
 
     private final static Logger LOGGER = LogManager.getLogger(SocketChannelHandler.class);
+
+    private final MessageHandlingService messageHandlingService;
 
     final SocketChannel socketChannel;
     final SelectionKey selectionKey;
     static final int READING = 0, SENDING = 1;
     int state = READING;
     final MessageReader messageReader;
-    private User user;
+    final MessageWriter messageWriter;
+    private ChatSession chatSession;
 
     SocketChannelHandler(Selector selector, SocketChannel c) throws IOException {
 
@@ -33,8 +43,9 @@ public class SocketChannelHandler implements Runnable {
         selectionKey.interestOps(SelectionKey.OP_READ);
         selector.wakeup();
         messageReader = new MessageReaderNio(socketChannel);
-        MessageWriter messageWriter = new MessageWriterNio(socketChannel);
-        user = new User(messageWriter);
+        messageWriter = new MessageWriterNio(socketChannel);
+        chatSession = new ChatSession(this);
+        this.messageHandlingService = new MessageHandlingService(new CommandParser());
     }
 
 
@@ -61,46 +72,22 @@ public class SocketChannelHandler implements Runnable {
     }
 
     void send(){
-        message.setAuthor(user);
-
-        CommandType command = message.getCommandType();
-        switch(command) {
-            case REGISTER:
-                register(message);
-                break;
-            case MESSAGE:
-                sendMessage(message);
-                break;
-            case LEAVE:
-                leave();
-                break;
-            case EXIT:
-                exit();
-                return;
-        }
+        messageHandlingService.handleMessage(message, chatSession);
 
         selectionKey.interestOps(SelectionKey.OP_READ);
         state = READING;
     }
 
-
-    private void register(Message message){
-        this.user.register(message);
+    @Override
+    public MessageWriter getMessageWriter() {
+        return messageWriter;
     }
 
-    private void sendMessage(Message message){
-        this.user.sendMessage(message);
-    }
-
-    private void leave() {
-        this.user.leave();
-    }
-
-    private void exit() {
-        this.user.exit();
+    public void disconnect() {
         try {
             socketChannel.close();
             messageReader.close();
+            messageWriter.close();
         } catch (IOException ex) {
             LOGGER.error("Error in Handler: ", ex);
         }

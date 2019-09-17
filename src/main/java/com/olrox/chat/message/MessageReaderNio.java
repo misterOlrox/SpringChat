@@ -30,19 +30,12 @@ public class MessageReaderNio implements MessageReader{
 
         Message message = new Message(data);
 
-        message.setCommandType(CommandParser.parse(data));
         return message;
     }
 
     private synchronized void readProcess(int readCount) {
         StringBuilder sb = new StringBuilder();
         input.flip();
-//        byte[] subStringBytes = new byte[readCount];
-//        byte[] array = input.array();
-//        System.arraycopy(array, 0, subStringBytes, 0, readCount);
-//        sb.append(new String(subStringBytes));
-//        input.clear();
-//        data = sb.toString().trim();
         data = StandardCharsets.UTF_8.decode(input).toString().trim();
         input.clear();
     }

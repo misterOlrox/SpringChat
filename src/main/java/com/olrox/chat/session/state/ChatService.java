@@ -1,8 +1,9 @@
-package com.olrox.chat.user.state;
+package com.olrox.chat.session.state;
 
 import com.olrox.chat.entity.Message;
 
-public interface UserState {
+public interface ChatService {
+
     void register(Message message);
 
     void sendMessage(Message message);

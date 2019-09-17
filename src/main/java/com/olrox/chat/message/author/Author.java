@@ -1,6 +1,6 @@
 package com.olrox.chat.message.author;
 
 public interface Author {
-    String getUsername();
+    String getName();
     AuthorType getAuthorType();
 }

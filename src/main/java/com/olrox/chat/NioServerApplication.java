@@ -1,6 +1,6 @@
 package com.olrox.chat;
 
-import com.olrox.chat.nio.Reactor;
+import com.olrox.chat.controller.nio.Reactor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -1,15 +1,10 @@
 package com.olrox.chat.message.author;
 
-import com.olrox.chat.manager.UsersManager;
-import com.olrox.chat.manager.UsersManagerFactory;
-
 public class ServerAsAuthor implements Author {
     private final static String NAME = "Server";
     private final static ServerAsAuthor INSTANCE = new ServerAsAuthor();
 
     private ServerAsAuthor(){
-        UsersManager usersManager = UsersManagerFactory.createUsersManager();
-        usersManager.addOnlineUser(this.getUsername());
     }
 
     public static ServerAsAuthor getInstance(){
@@ -17,7 +12,7 @@ public class ServerAsAuthor implements Author {
     }
 
     @Override
-    public String getUsername() {
+    public String getName() {
         return NAME;
     }
 

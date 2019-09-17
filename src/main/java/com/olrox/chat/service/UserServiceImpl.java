@@ -1,30 +1,32 @@
-package com.olrox.chat.manager;
+package com.olrox.chat.service;
 
-import com.olrox.chat.user.User;
+import com.olrox.chat.session.ChatSession;
+import org.springframework.stereotype.Service;
 
-public class UsersManagerImpl implements UsersManager{
+@Service
+public class UserServiceImpl implements UserService {
     private final static UsersData usersData = new UsersData();
 
-    UsersManagerImpl() {
+    UserServiceImpl() {
     }
 
     @Override
-    public User pollFreeClient() {
+    public ChatSession pollFreeClient() {
         return usersData.pollFreeClient();
     }
 
     @Override
-    public User pollFreeAgent() {
+    public ChatSession pollFreeAgent() {
         return usersData.pollFreeAgent();
     }
 
     @Override
-    public void addFreeClient(User client) {
+    public void addFreeClient(ChatSession client) {
         usersData.addFreeClient(client);
     }
 
     @Override
-    public void addFreeAgent(User agent) {
+    public void addFreeAgent(ChatSession agent) {
         usersData.addFreeAgent(agent);
     }
 

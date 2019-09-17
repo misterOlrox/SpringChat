@@ -1,7 +1,8 @@
-package com.olrox.chat.nio;
+package com.olrox.chat.controller.nio;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.channels.Selector;

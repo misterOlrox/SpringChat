@@ -1,13 +1,17 @@
-package com.olrox.chat.message;
+package com.olrox.chat.service;
 
+import com.olrox.chat.command.CommandType;
+import org.springframework.stereotype.Service;
+
+@Service
 public class CommandParser {
-    public static CommandType parse(String commandString) {
+    public CommandType parse(String commandString) {
         if(commandString == null) {
             return CommandType.EXIT;
         }
 
         if(!commandString.startsWith("/")) {
-            return CommandType.MESSAGE;
+            return CommandType.SEND_MESSAGE;
         }
 
         for(CommandType command : CommandType.values()){
@@ -16,6 +20,6 @@ public class CommandParser {
             }
         }
 
-        return CommandType.MESSAGE;
+        return CommandType.SEND_MESSAGE;
     }
 }
