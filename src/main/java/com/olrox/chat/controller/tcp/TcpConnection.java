@@ -1,4 +1,4 @@
-package com.olrox.chat.spring.tcp;
+package com.olrox.chat.controller.tcp;
 
 import java.io.IOException;
 import java.io.InputStream;

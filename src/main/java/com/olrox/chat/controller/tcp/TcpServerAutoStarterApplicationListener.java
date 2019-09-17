@@ -1,6 +1,6 @@
-package com.olrox.chat.spring.tcp;
+package com.olrox.chat.controller.tcp;
 
-import com.olrox.chat.spring.starter.TcpServerProperties;
+import com.olrox.chat.controller.starter.TcpServerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;

@@ -1,4 +1,4 @@
-package com.olrox.chat.spring.tcp;
+package com.olrox.chat.controller.tcp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

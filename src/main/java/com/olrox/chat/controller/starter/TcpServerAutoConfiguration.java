@@ -1,9 +1,9 @@
-package com.olrox.chat.spring.starter;
+package com.olrox.chat.controller.starter;
 
-import com.olrox.chat.spring.tcp.Server;
-import com.olrox.chat.spring.tcp.TcpControllerBeanPostProcessor;
-import com.olrox.chat.spring.tcp.TcpServer;
-import com.olrox.chat.spring.tcp.TcpServerAutoStarterApplicationListener;
+import com.olrox.chat.controller.tcp.Server;
+import com.olrox.chat.controller.tcp.TcpControllerBeanPostProcessor;
+import com.olrox.chat.controller.tcp.TcpServer;
+import com.olrox.chat.controller.tcp.TcpServerAutoStarterApplicationListener;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

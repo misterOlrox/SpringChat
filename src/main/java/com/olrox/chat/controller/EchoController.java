@@ -1,7 +1,7 @@
-package com.olrox.chat.spring;
+package com.olrox.chat.controller;
 
-import com.olrox.chat.spring.tcp.Connection;
-import com.olrox.chat.spring.tcp.TcpController;
+import com.olrox.chat.controller.tcp.Connection;
+import com.olrox.chat.controller.tcp.TcpController;
 
 @TcpController
 public class EchoController {
