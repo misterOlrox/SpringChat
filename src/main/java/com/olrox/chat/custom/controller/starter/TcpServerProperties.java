@@ -1,4 +1,4 @@
-package com.olrox.chat.controller.custom.starter;
+package com.olrox.chat.custom.controller.starter;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

@@ -1,4 +1,4 @@
-package com.olrox.chat.controller.custom.tcp;
+package com.olrox.chat.custom.controller.tcp;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;

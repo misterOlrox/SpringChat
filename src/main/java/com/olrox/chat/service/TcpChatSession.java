@@ -1,6 +1,6 @@
 package com.olrox.chat.service;
 
-import com.olrox.chat.controller.custom.tcp.Connection;
+import com.olrox.chat.custom.controller.tcp.Connection;
 import com.olrox.chat.entity.message.Message;
 
 public class TcpChatSession implements IChatSession{

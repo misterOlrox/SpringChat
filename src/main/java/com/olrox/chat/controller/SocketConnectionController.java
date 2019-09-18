@@ -1,13 +1,13 @@
 package com.olrox.chat.controller;
 
-import com.olrox.chat.controller.custom.tcp.Connection;
-import com.olrox.chat.controller.custom.tcp.TcpController;
-import com.olrox.chat.controller.custom.tcp.TcpServer;
+import com.olrox.chat.custom.controller.tcp.Connection;
+import com.olrox.chat.custom.controller.tcp.TcpController;
+import com.olrox.chat.custom.controller.tcp.TcpServer;
 import com.olrox.chat.service.ConnectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @TcpController
-public class SocketConnectionsController {
+public class SocketConnectionController {
 
     @Autowired
     private TcpServer tcpServer;

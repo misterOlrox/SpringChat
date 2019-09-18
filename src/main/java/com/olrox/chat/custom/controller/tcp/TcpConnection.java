@@ -1,4 +1,4 @@
-package com.olrox.chat.controller.custom.tcp;
+package com.olrox.chat.custom.controller.tcp;
 
 import java.io.IOException;
 import java.io.InputStream;
