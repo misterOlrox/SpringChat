@@ -1,11 +1,13 @@
 package com.olrox.chat.entity;
 
-import com.olrox.chat.message.author.Author;
-import com.olrox.chat.message.author.AuthorType;
+import com.olrox.chat.entity.message.author.Author;
+import com.olrox.chat.entity.message.author.AuthorType;
 
 public class User implements Author {
     private AuthorType authorType;
     private String name;
+
+    public User(){}
 
     public User(String name, AuthorType authorType) {
         this.name = name;
