@@ -1,7 +1,5 @@
 package com.olrox.chat.entity;
 
-import com.olrox.chat.entity.message.Message;
-
 import java.util.List;
 
 public class ChatRoom {

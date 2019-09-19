@@ -1,20 +1,17 @@
 package com.olrox.chat.entity;
 
-import com.olrox.chat.entity.message.author.Author;
-import com.olrox.chat.entity.message.author.AuthorType;
+import com.olrox.chat.service.chatsession.IChatSession;
 
-public class User implements Author {
-    private AuthorType authorType;
+import java.util.UUID;
+
+public class User {
+    private UUID id;
     private String name;
+    private IChatSession chatSession;
 
-    public User(){}
-
-    public User(String name, AuthorType authorType) {
-        this.name = name;
-        this.authorType = authorType;
+    public User(){
     }
 
-    @Override
     public String getName() {
         return name;
     }
@@ -23,12 +20,19 @@ public class User implements Author {
         this.name = name;
     }
 
-    @Override
-    public AuthorType getAuthorType() {
-        return authorType;
+    public UUID getId() {
+        return id;
     }
 
-    public void setAuthorType(AuthorType authorType) {
-        this.authorType = authorType;
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public IChatSession getChatSession() {
+        return chatSession;
+    }
+
+    public void setChatSession(IChatSession chatSession) {
+        this.chatSession = chatSession;
     }
 }

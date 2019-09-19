@@ -1,4 +1,4 @@
-package com.olrox.chat.custom.controller.tcp;
+package com.olrox.chat.tcp;
 
 
 import java.util.List;

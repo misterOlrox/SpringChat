@@ -1,4 +1,4 @@
-package com.olrox.chat.custom.controller.tcp;
+package com.olrox.chat.tcp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

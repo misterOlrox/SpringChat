@@ -1,13 +1,10 @@
-package com.olrox.chat.entity.message;
-
-import com.olrox.chat.entity.ChatRoom;
-import com.olrox.chat.entity.User;
-import com.olrox.chat.entity.message.author.Author;
+package com.olrox.chat.entity;
 
 import java.time.LocalDateTime;
 
 public class Message {
-    private Author sender;
+    private MessageType type;
+    private User sender;
     private ChatRoom chatRoom;
     private User recipient;
     private String text;
@@ -16,11 +13,19 @@ public class Message {
     public Message() {
     }
 
-    public Author getSender() {
+    public MessageType getType() {
+        return type;
+    }
+
+    public void setType(MessageType type) {
+        this.type = type;
+    }
+
+    public User getSender() {
         return sender;
     }
 
-    public void setSender(Author sender) {
+    public void setSender(User sender) {
         this.sender = sender;
     }
 

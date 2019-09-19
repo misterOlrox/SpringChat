@@ -1,14 +1,10 @@
 package com.olrox.chat.service;
 
-import com.olrox.chat.custom.controller.tcp.Connection;
 import com.olrox.chat.entity.User;
-import com.olrox.chat.entity.message.Message;
-import com.olrox.chat.entity.message.author.ServerAsAuthor;
 import com.olrox.chat.repository.ConnectionRepository;
+import com.olrox.chat.service.chatsession.IChatSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 public class ConnectionService {
@@ -16,18 +12,14 @@ public class ConnectionService {
     @Autowired
     private ConnectionRepository connectionRepository;
 
-    public void addNewConnection(Connection connection) {
-        IChatSession chatSession = new TcpChatSession(connection);
+    @Autowired
+    private MessageFactoryService messageFactoryService;
 
-        User newUser = new User();
+    public void addNewChatSession(IChatSession chatSession) {
+        connectionRepository.addChatSession(chatSession.getUser(), chatSession);
 
-        connectionRepository.addChatSession(newUser, chatSession);
+        chatSession.send(messageFactoryService.createGreetingMessage());
 
-        Message greeting1 = new Message();
-        greeting1.setSender(ServerAsAuthor.getInstance());
-        greeting1.setSendTime(LocalDateTime.now());
-        greeting1.setText("Hello ಠ_ಠ");
-
-        chatSession.send(greeting1);
+        chatSession.send(messageFactoryService.createRegisterInfoMessage());
     }
 }
