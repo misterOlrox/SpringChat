@@ -1,10 +1,8 @@
-package com.olrox.chat.service.chatsession;
+package com.olrox.chat.service.sending;
 
 import com.olrox.chat.entity.Message;
 import com.olrox.chat.entity.User;
 
-public interface IChatSession {
+public interface ChatSession {
     void send(Message message);
-
-    User getUser();
 }

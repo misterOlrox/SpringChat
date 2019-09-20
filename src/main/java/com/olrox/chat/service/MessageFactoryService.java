@@ -25,4 +25,13 @@ public class MessageFactoryService {
 
         return message;
     }
+
+    public Message createServerMessage(String text) {
+        Message message = new Message();
+        message.setType(MessageType.SERVER_INFO);
+        message.setSendTime(LocalDateTime.now());
+        message.setText(text);
+
+        return message;
+    }
 }

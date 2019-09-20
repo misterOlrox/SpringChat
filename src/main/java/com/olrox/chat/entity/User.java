@@ -1,13 +1,13 @@
 package com.olrox.chat.entity;
 
-import com.olrox.chat.service.chatsession.IChatSession;
+import com.olrox.chat.service.sending.ChatSession;
 
 import java.util.UUID;
 
 public class User {
     private UUID id;
     private String name;
-    private IChatSession chatSession;
+    private ChatSession chatSession;
 
     public User(){
     }
@@ -28,11 +28,11 @@ public class User {
         this.id = id;
     }
 
-    public IChatSession getChatSession() {
+    public ChatSession getChatSession() {
         return chatSession;
     }
 
-    public void setChatSession(IChatSession chatSession) {
+    public void setChatSession(ChatSession chatSession) {
         this.chatSession = chatSession;
     }
 }

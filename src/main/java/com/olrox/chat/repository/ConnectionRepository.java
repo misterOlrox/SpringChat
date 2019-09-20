@@ -1,8 +1,7 @@
 package com.olrox.chat.repository;
 
-import com.olrox.chat.tcp.Connection;
 import com.olrox.chat.entity.User;
-import com.olrox.chat.service.chatsession.IChatSession;
+import com.olrox.chat.service.sending.ChatSession;
 import org.springframework.stereotype.Repository;
 
 import java.util.Map;
@@ -10,11 +9,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 public class ConnectionRepository {
-    private final Map<Connection, IChatSession> tcpSessions = new ConcurrentHashMap<>();
-    private final Map<User, IChatSession> userToSession = new ConcurrentHashMap<>();
+    private final Map<User, ChatSession> userMap = new ConcurrentHashMap<>();
+    private final Map<ChatSession, User> chatSessionMap = new ConcurrentHashMap<>();
 
-    public IChatSession addChatSession(User user, IChatSession chatSession){
-        return userToSession.put(user, chatSession);
+    public void addChatSession(User user, ChatSession chatSession){
+        chatSessionMap.put(chatSession, user);
+        userMap.put(user, chatSession);
+    }
+
+    public User findUserBy(ChatSession chatSession){
+        return chatSessionMap.get(chatSession);
     }
 
     //public IChatSession getSession()

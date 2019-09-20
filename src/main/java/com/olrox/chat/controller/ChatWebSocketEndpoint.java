@@ -4,9 +4,8 @@ import com.olrox.chat.config.CustomSpringConfigurator;
 import com.olrox.chat.tcp.TcpServer;
 import com.olrox.chat.entity.User;
 import com.olrox.chat.service.ConnectionService;
-import com.olrox.chat.service.MessageHandlingService;
-import com.olrox.chat.service.chatsession.IChatSession;
-import com.olrox.chat.service.chatsession.WsChatSession;
+import com.olrox.chat.service.sending.ChatSession;
+import com.olrox.chat.service.sending.WsChatSessionAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.websocket.OnClose;
@@ -23,13 +22,11 @@ public class ChatWebSocketEndpoint {
     @Autowired
     private ConnectionService connectionService;
 
-    @Autowired
-    private MessageHandlingService messageHandlingService;
 
     @OnOpen
     public void onOpen(Session session) {
 
-        IChatSession chatSession = new WsChatSession(session, new User());
+        ChatSession chatSession = new WsChatSessionAdapter(session);
         connectionService.addNewChatSession(chatSession);
     }
 
