@@ -1,4 +1,4 @@
-package com.olrox.chat.tcp;
+package com.olrox.chat.tcp.annotation;
 
 import org.springframework.stereotype.Component;
 

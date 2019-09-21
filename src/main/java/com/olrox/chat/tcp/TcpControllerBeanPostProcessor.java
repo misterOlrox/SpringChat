@@ -1,5 +1,6 @@
 package com.olrox.chat.tcp;
 
+import com.olrox.chat.tcp.annotation.*;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -7,10 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class TcpControllerBeanPostProcessor implements BeanPostProcessor {
@@ -31,37 +29,51 @@ public class TcpControllerBeanPostProcessor implements BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (map.containsKey(beanName)) {
-            List<Method> receiveMethods = new ArrayList<>();
+            List<Method> messageMethods = new ArrayList<>();
+            List<Method> commandMethods = new ArrayList<>();
             List<Method> connectMethods = new ArrayList<>();
             List<Method> disconnectMethods = new ArrayList<>();
             Method[] methods = bean.getClass().getMethods();
             for (Method method : methods) {
-                if (method.getName().startsWith("receive") && method.getParameterCount() == 2
+                if(method.getAnnotation(OnSocketMessage.class) != null && method.getParameterCount() == 2
                         && method.getParameterTypes()[0] == Connection.class) {
-                    receiveMethods.add(method);
-                } else if (method.getName().startsWith("connect") && method.getParameterCount() == 1
+                    messageMethods.add(method);
+                } else if (method.getAnnotation(OnSocketCommand.class) != null && method.getParameterCount() == 2
+                        && method.getParameterTypes()[0] == Connection.class) {
+                    commandMethods.add(method);
+                } else if (method.getAnnotation(OnSocketConnect.class) != null && method.getParameterCount() == 1
                         && method.getParameterTypes()[0] == Connection.class) {
                     connectMethods.add(method);
-                } else if (method.getName().startsWith("disconnect") && method.getParameterCount() == 1
+                } else if (method.getAnnotation(OnSocketDisconnect.class) != null && method.getParameterCount() == 1
                         && method.getParameterTypes()[0] == Connection.class) {
                     disconnectMethods.add(method);
                 }
             }
 
+            commandMethods.sort(Comparator.comparingInt(o -> o.getAnnotation(OnSocketCommand.class).priority()));
 
             server.addListener(new Connection.Listener() {
                 @Override
                 public void messageReceived(Connection connection, Object message) {
-                    for (Method receiveMethod : receiveMethods) {
-                        Class<?> aClass = receiveMethod.getParameterTypes()[1];
-                        if (message.getClass().isAssignableFrom(aClass)) {
+                    String text = new String((byte[])message).trim();
+
+                    for (Method commandMethod : commandMethods) {
+                        String regex = commandMethod.getAnnotation(OnSocketCommand.class).regex();
+                        if (text.matches(regex)) {
                             try {
-                                receiveMethod.invoke(bean, connection, message);
-                            } catch (IllegalAccessException e) {
-                                e.printStackTrace();
-                            } catch (InvocationTargetException e) {
+                                commandMethod.invoke(bean, connection, text);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
                                 e.printStackTrace();
                             }
+                            return;
+                        }
+                    }
+
+                    for(Method messageMethod : messageMethods) {
+                        try {
+                            messageMethod.invoke(bean, connection, text);
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            e.printStackTrace();
                         }
                     }
                 }
@@ -71,9 +83,7 @@ public class TcpControllerBeanPostProcessor implements BeanPostProcessor {
                     for (Method connectMethod : connectMethods) {
                         try {
                             connectMethod.invoke(bean, connection);
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        } catch (InvocationTargetException e) {
+                        } catch (IllegalAccessException | InvocationTargetException e) {
                             e.printStackTrace();
                         }
                     }
@@ -84,9 +94,7 @@ public class TcpControllerBeanPostProcessor implements BeanPostProcessor {
                     for (Method disconnectMethod : disconnectMethods) {
                         try {
                             disconnectMethod.invoke(bean, connection);
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        } catch (InvocationTargetException e) {
+                        } catch (IllegalAccessException | InvocationTargetException e) {
                             e.printStackTrace();
                         }
                     }

@@ -1,5 +1,9 @@
 package com.olrox.chat.tcp;
 
+import com.olrox.chat.tcp.annotation.TcpController;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,6 +14,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TcpConnection implements Connection {
+
+    private static Log logger = LogFactory.getLog(TcpController.class);
+
     private InputStream inputStream;
     private OutputStream outputStream;
     private Socket socket;
@@ -39,6 +46,8 @@ public class TcpConnection implements Connection {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
+            logger.warn("Message wasn't sent");
         }
     }
 
