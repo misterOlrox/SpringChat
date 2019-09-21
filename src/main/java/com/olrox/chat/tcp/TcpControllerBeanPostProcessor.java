@@ -35,22 +35,22 @@ public class TcpControllerBeanPostProcessor implements BeanPostProcessor {
             List<Method> disconnectMethods = new ArrayList<>();
             Method[] methods = bean.getClass().getMethods();
             for (Method method : methods) {
-                if(method.getAnnotation(OnSocketMessage.class) != null && method.getParameterCount() == 2
+                if(method.getAnnotation(OnTcpMessage.class) != null && method.getParameterCount() == 2
                         && method.getParameterTypes()[0] == Connection.class) {
                     messageMethods.add(method);
-                } else if (method.getAnnotation(OnSocketCommand.class) != null && method.getParameterCount() == 2
+                } else if (method.getAnnotation(OnTcpCommand.class) != null && method.getParameterCount() == 2
                         && method.getParameterTypes()[0] == Connection.class) {
                     commandMethods.add(method);
-                } else if (method.getAnnotation(OnSocketConnect.class) != null && method.getParameterCount() == 1
+                } else if (method.getAnnotation(OnTcpConnect.class) != null && method.getParameterCount() == 1
                         && method.getParameterTypes()[0] == Connection.class) {
                     connectMethods.add(method);
-                } else if (method.getAnnotation(OnSocketDisconnect.class) != null && method.getParameterCount() == 1
+                } else if (method.getAnnotation(OnTcpDisconnect.class) != null && method.getParameterCount() == 1
                         && method.getParameterTypes()[0] == Connection.class) {
                     disconnectMethods.add(method);
                 }
             }
 
-            commandMethods.sort(Comparator.comparingInt(o -> o.getAnnotation(OnSocketCommand.class).priority()));
+            commandMethods.sort(Comparator.comparingInt(o -> o.getAnnotation(OnTcpCommand.class).priority()));
 
             server.addListener(new Connection.Listener() {
                 @Override
@@ -58,7 +58,7 @@ public class TcpControllerBeanPostProcessor implements BeanPostProcessor {
                     String text = new String((byte[])message).trim();
 
                     for (Method commandMethod : commandMethods) {
-                        String regex = commandMethod.getAnnotation(OnSocketCommand.class).regex();
+                        String regex = commandMethod.getAnnotation(OnTcpCommand.class).regex();
                         if (text.matches(regex)) {
                             try {
                                 commandMethod.invoke(bean, connection, text);

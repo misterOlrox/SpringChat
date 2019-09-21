@@ -17,7 +17,7 @@ public class SocketController {
     private ConnectionService connectionService;
 
 
-    @OnSocketConnect
+    @OnTcpConnect
     public void connect(Connection connection) {
         System.out.println("New connection " + connection.getAddress().getCanonicalHostName());
 
@@ -25,31 +25,31 @@ public class SocketController {
         connectionService.addNewChatSession(chatSession);
     }
 
-    @OnSocketDisconnect
+    @OnTcpDisconnect
     public void disconnect(Connection connection) {
         System.out.println("Disconnect " + connection.getAddress().getCanonicalHostName());
     }
 
-    @OnSocketMessage
+    @OnTcpMessage
     public void receiveMessage(Connection connection, String text) {
 
 
         connection.send("That was just a message\n".getBytes());
     }
 
-    @OnSocketCommand(regex = "\\/register .+", priority = 1)
+    @OnTcpCommand(regex = "\\/register .+", priority = 1)
     public void register(Connection connection, String text) {
 
         connection.send("That was /register\n".getBytes());
     }
 
-    @OnSocketCommand(regex = "\\/leave", priority = 2)
+    @OnTcpCommand(regex = "\\/leave", priority = 2)
     public void leave(Connection connection, String text) {
 
         connection.send("That was /leave\n".getBytes());
     }
 
-    @OnSocketCommand(regex = "\\/exit", priority = 3)
+    @OnTcpCommand(regex = "\\/exit", priority = 3)
     public void exit(Connection connection, String text) {
 
     }
