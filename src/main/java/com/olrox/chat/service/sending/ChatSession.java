@@ -5,4 +5,8 @@ import com.olrox.chat.entity.User;
 
 public interface ChatSession {
     void send(Message message);
+
+    long getUserId();
+
+    void setUserId(long userId);
 }

@@ -10,6 +10,7 @@ import java.util.Objects;
 
 public class WsChatSessionAdapter implements ChatSession {
     private final Session session;
+    private long userId;
 
     public WsChatSessionAdapter(Session session) {
         this.session = session;
@@ -28,6 +29,16 @@ public class WsChatSessionAdapter implements ChatSession {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public long getUserId() {
+        return userId;
+    }
+
+    @Override
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     @Override

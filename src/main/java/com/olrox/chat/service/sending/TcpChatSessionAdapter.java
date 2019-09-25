@@ -9,6 +9,7 @@ import java.util.Objects;
 
 public class TcpChatSessionAdapter implements ChatSession {
     private final Connection connection;
+    private long userId;
 
     public TcpChatSessionAdapter(Connection connection) {
         this.connection = connection;
@@ -19,6 +20,16 @@ public class TcpChatSessionAdapter implements ChatSession {
         String sender = message.getType() == MessageType.SERVER_INFO ? "Server" : message.getSender().getName();
         String response = "[" + sender + "] : " + message.getText() + '\n';
         connection.send(response.getBytes());
+    }
+
+    @Override
+    public long getUserId() {
+        return userId;
+    }
+
+    @Override
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     @Override

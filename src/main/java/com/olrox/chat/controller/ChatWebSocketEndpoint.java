@@ -2,7 +2,7 @@ package com.olrox.chat.controller;
 
 import com.olrox.chat.config.CustomSpringConfigurator;
 import com.olrox.chat.controller.util.ChatCommand;
-import com.olrox.chat.service.ConnectionService;
+import com.olrox.chat.service.ChatSessionService;
 import com.olrox.chat.service.sending.ChatSession;
 import com.olrox.chat.service.sending.WsChatSessionAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +16,14 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint(value = "/chat", configurator = CustomSpringConfigurator.class)
 public class ChatWebSocketEndpoint {
     @Autowired
-    private ConnectionService connectionService;
+    private ChatSessionService chatSessionService;
 
     @OnOpen
     public void onOpen(Session session) {
+        session.addMessageHandler();
 
         ChatSession chatSession = new WsChatSessionAdapter(session);
-        connectionService.addNewChatSession(chatSession);
+        chatSessionService.addNewChatSession(chatSession);
     }
 
     @OnClose
@@ -40,36 +41,36 @@ public class ChatWebSocketEndpoint {
         }
     }
 
+    private final ChatCommand REGISTER = new ChatCommand("\\/register .+") {
+        @Override
+        public void execute(ChatSession chatSession, String text) {
+        }
+    };
+
+    private final ChatCommand LEAVE = new ChatCommand("\\/leave") {
+        @Override
+        public void execute(ChatSession chatSession, String text) {
+
+        }
+    };
+
+    private final ChatCommand EXIT = new ChatCommand("\\/exit") {
+        @Override
+        public void execute(ChatSession chatSession, String text) {
+
+        }
+    };
+
+    private final ChatCommand SEND_MESSAGE = new ChatCommand(".*") {
+        @Override
+        public void execute(ChatSession chatSession, String text) {
+        }
+    };
+
     private final ChatCommand[] chatCommands = new ChatCommand[]{
-            // /register
-            new ChatCommand("\\/register .+") {
-                @Override
-                public void execute(ChatSession chatSession, String text) {
-
-                }
-            },
-
-            // /leave
-            new ChatCommand("\\/leave") {
-                @Override
-                public void execute(ChatSession chatSession, String text) {
-
-                }
-            },
-
-            // /exit
-            new ChatCommand("\\/exit") {
-                @Override
-                public void execute(ChatSession chatSession, String text) {
-
-                }
-            },
-
-            // message
-            new ChatCommand(".*") {
-                @Override
-                public void execute(ChatSession chatSession, String text) {
-                }
-            }
+            REGISTER,
+            LEAVE,
+            EXIT,
+            SEND_MESSAGE
     };
 }

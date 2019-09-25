@@ -1,6 +1,6 @@
 package com.olrox.chat.controller;
 
-import com.olrox.chat.service.ConnectionService;
+import com.olrox.chat.service.ChatSessionService;
 import com.olrox.chat.service.sending.ChatSession;
 import com.olrox.chat.service.sending.TcpChatSessionAdapter;
 import com.olrox.chat.tcp.Connection;
@@ -14,7 +14,7 @@ public class SocketController {
 //    private TcpServer tcpServer;
 
     @Autowired
-    private ConnectionService connectionService;
+    private ChatSessionService chatSessionService;
 
 
     @OnTcpConnect
@@ -22,7 +22,7 @@ public class SocketController {
         System.out.println("New connection " + connection.getAddress().getCanonicalHostName());
 
         ChatSession chatSession = new TcpChatSessionAdapter(connection);
-        connectionService.addNewChatSession(chatSession);
+        chatSessionService.addNewChatSession(chatSession);
     }
 
     @OnTcpDisconnect

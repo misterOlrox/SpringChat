@@ -1,15 +1,22 @@
 package com.olrox.chat.entity;
 
-import com.olrox.chat.service.sending.ChatSession;
+import javax.persistence.*;
 
-import java.util.UUID;
-
+@Entity
+@Table(name = "user_table")
 public class User {
-    private UUID id;
-    private String name;
-    private ChatSession chatSession;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
-    public User(){
+    private String name;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -18,21 +25,5 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public ChatSession getChatSession() {
-        return chatSession;
-    }
-
-    public void setChatSession(ChatSession chatSession) {
-        this.chatSession = chatSession;
     }
 }
