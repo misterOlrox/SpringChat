@@ -75,6 +75,7 @@ public class TcpControllerBeanPostProcessor implements BeanPostProcessor {
                         } catch (IllegalAccessException | InvocationTargetException e) {
                             e.printStackTrace();
                         }
+                        return;
                     }
                 }
 
@@ -86,6 +87,7 @@ public class TcpControllerBeanPostProcessor implements BeanPostProcessor {
                         } catch (IllegalAccessException | InvocationTargetException e) {
                             e.printStackTrace();
                         }
+                        return;
                     }
                 }
 
@@ -97,6 +99,7 @@ public class TcpControllerBeanPostProcessor implements BeanPostProcessor {
                         } catch (IllegalAccessException | InvocationTargetException e) {
                             e.printStackTrace();
                         }
+                        return;
                     }
                 }
             });
