@@ -1,16 +1,40 @@
 package com.olrox.chat.entity;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
+@Entity
+@Table(name = "message_table")
 public class Message {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Enumerated(EnumType.STRING)
     private MessageType type;
+
+    @ManyToOne
     private User sender;
+
+    @ManyToOne
     private ChatRoom chatRoom;
+
+    @OneToOne
     private User recipient;
+
     private String text;
     private LocalDateTime sendTime;
 
     public Message() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public MessageType getType() {
@@ -27,6 +51,14 @@ public class Message {
 
     public void setSender(User sender) {
         this.sender = sender;
+    }
+
+    public User getRecipient() {
+        return recipient;
+    }
+
+    public void setRecipient(User recipient) {
+        this.recipient = recipient;
     }
 
     public String getText() {
@@ -51,13 +83,5 @@ public class Message {
 
     public void setChatRoom(ChatRoom chatRoom) {
         this.chatRoom = chatRoom;
-    }
-
-    public User getRecipient() {
-        return recipient;
-    }
-
-    public void setRecipient(User recipient) {
-        this.recipient = recipient;
     }
 }

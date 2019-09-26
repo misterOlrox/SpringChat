@@ -1,4 +1,4 @@
-package com.olrox.chat.config;
+package com.olrox.chat.tcp.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

@@ -1,28 +1,35 @@
 package com.olrox.chat.controller;
 
-import com.olrox.chat.service.ChatSessionService;
-import com.olrox.chat.service.sending.ChatSession;
-import com.olrox.chat.service.sending.TcpChatSessionAdapter;
+import com.olrox.chat.entity.ConnectionType;
+import com.olrox.chat.entity.User;
+import com.olrox.chat.service.ConnectionService;
+import com.olrox.chat.service.UserService;
 import com.olrox.chat.tcp.Connection;
 import com.olrox.chat.tcp.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 @TcpController
 public class SocketController {
 
-//    @Autowired
-//    private TcpServer tcpServer;
+    private final Map<Connection, Long> connections = new ConcurrentHashMap<>();
 
     @Autowired
-    private ChatSessionService chatSessionService;
+    private ConnectionService connectionService;
 
+    @Autowired
+    private UserService userService;
 
     @OnTcpConnect
     public void connect(Connection connection) {
         System.out.println("New connection " + connection.getAddress().getCanonicalHostName());
 
-        ChatSession chatSession = new TcpChatSessionAdapter(connection);
-        chatSessionService.addNewChatSession(chatSession);
+        User user = userService.addUnauthorizedUser(ConnectionType.SOCKET);
+        Long userId = user.getId();
+        connections.put(connection, userId);
+        connectionService.addSocketConnection(userId, connection);
     }
 
     @OnTcpDisconnect

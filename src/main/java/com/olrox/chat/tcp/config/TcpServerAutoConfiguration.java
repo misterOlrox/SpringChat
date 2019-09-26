@@ -1,4 +1,4 @@
-package com.olrox.chat.config;
+package com.olrox.chat.tcp.config;
 
 import com.olrox.chat.tcp.Server;
 import com.olrox.chat.tcp.TcpControllerBeanPostProcessor;

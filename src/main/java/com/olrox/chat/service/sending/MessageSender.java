@@ -3,10 +3,8 @@ package com.olrox.chat.service.sending;
 import com.olrox.chat.entity.Message;
 import com.olrox.chat.entity.User;
 
-public interface ChatSession {
-    void send(Message message);
+public interface MessageSender {
 
-    long getUserId();
+    void send(Message message, User user);
 
-    void setUserId(long userId);
 }

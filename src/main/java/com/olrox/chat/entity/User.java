@@ -11,6 +11,9 @@ public class User {
 
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    private ConnectionType connectionType;
+
     public long getId() {
         return id;
     }
@@ -25,5 +28,13 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public ConnectionType getConnectionType() {
+        return connectionType;
+    }
+
+    public void setConnectionType(ConnectionType connectionType) {
+        this.connectionType = connectionType;
     }
 }
