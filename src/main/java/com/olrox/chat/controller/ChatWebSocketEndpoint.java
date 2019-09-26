@@ -34,14 +34,8 @@ public class ChatWebSocketEndpoint {
     @Autowired
     private MessageService messageService;
 
-
-
-    private final MessageSenderFactory messageSenderFactory;
-
     @Autowired
-    public ChatWebSocketEndpoint(MessageSenderFactory messageSenderFactory) {
-        this.messageSenderFactory = messageSenderFactory;
-    }
+    private MessageSenderFactory messageSenderFactory;
 
     @OnOpen
     public void onOpen(Session session) {
