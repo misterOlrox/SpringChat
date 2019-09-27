@@ -9,8 +9,8 @@ import com.olrox.chat.service.ConnectionService;
 import com.olrox.chat.service.MessageService;
 import com.olrox.chat.service.UserService;
 import com.olrox.chat.service.sending.MessageSender;
-import com.olrox.chat.service.sending.MessageSenderFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -35,7 +35,8 @@ public class ChatWebSocketEndpoint {
     private MessageService messageService;
 
     @Autowired
-    private MessageSenderFactory messageSenderFactory;
+    @Qualifier(ConnectionType.TypeConstants.WEBSOCKET_SENDER)
+    private MessageSender messageSender;
 
     @OnOpen
     public void onOpen(Session session) {
@@ -44,7 +45,6 @@ public class ChatWebSocketEndpoint {
         sessions.put(session, userId);
         connectionService.addWebSocketSession(userId, session);
 
-        MessageSender messageSender = messageSenderFactory.getMessageSender(ConnectionType.WEBSOCKET);
         messageSender.send(messageService.createGreetingMessage(user));
         messageSender.send(messageService.createRegisterInfoMessage(user));
     }

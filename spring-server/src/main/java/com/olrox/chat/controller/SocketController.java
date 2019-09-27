@@ -6,10 +6,10 @@ import com.olrox.chat.service.ConnectionService;
 import com.olrox.chat.service.MessageService;
 import com.olrox.chat.service.UserService;
 import com.olrox.chat.service.sending.MessageSender;
-import com.olrox.chat.service.sending.MessageSenderFactory;
 import com.olrox.chat.tcp.Connection;
 import com.olrox.chat.tcp.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,28 +26,26 @@ public class SocketController {
     private UserService userService;
 
     @Autowired
-    private MessageSenderFactory messageSenderFactory;
+    @Qualifier(ConnectionType.TypeConstants.SOCKET_SENDER)
+    private MessageSender messageSender;
 
     @Autowired
     private MessageService messageService;
 
     @OnTcpConnect
     public void connect(Connection connection) {
-        System.out.println("New connection " + connection.getAddress().getCanonicalHostName());
 
         User user = userService.addUnauthorizedUser(ConnectionType.SOCKET);
         Long userId = user.getId();
         connections.put(connection, userId);
         connectionService.addSocketConnection(userId, connection);
 
-        MessageSender messageSender = messageSenderFactory.getMessageSender(ConnectionType.SOCKET);
         messageSender.send(messageService.createGreetingMessage(user));
         messageSender.send(messageService.createRegisterInfoMessage(user));
     }
 
     @OnTcpDisconnect
     public void disconnect(Connection connection) {
-        System.out.println("Disconnect " + connection.getAddress().getCanonicalHostName());
     }
 
     @OnTcpMessage
