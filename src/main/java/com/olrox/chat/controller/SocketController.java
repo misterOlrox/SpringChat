@@ -3,7 +3,10 @@ package com.olrox.chat.controller;
 import com.olrox.chat.entity.ConnectionType;
 import com.olrox.chat.entity.User;
 import com.olrox.chat.service.ConnectionService;
+import com.olrox.chat.service.MessageService;
 import com.olrox.chat.service.UserService;
+import com.olrox.chat.service.sending.MessageSender;
+import com.olrox.chat.service.sending.MessageSenderFactory;
 import com.olrox.chat.tcp.Connection;
 import com.olrox.chat.tcp.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,12 @@ public class SocketController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private MessageSenderFactory messageSenderFactory;
+
+    @Autowired
+    private MessageService messageService;
+
     @OnTcpConnect
     public void connect(Connection connection) {
         System.out.println("New connection " + connection.getAddress().getCanonicalHostName());
@@ -30,6 +39,10 @@ public class SocketController {
         Long userId = user.getId();
         connections.put(connection, userId);
         connectionService.addSocketConnection(userId, connection);
+
+        MessageSender messageSender = messageSenderFactory.getMessageSender(ConnectionType.SOCKET);
+        messageSender.send(messageService.createGreetingMessage(user));
+        messageSender.send(messageService.createRegisterInfoMessage(user));
     }
 
     @OnTcpDisconnect

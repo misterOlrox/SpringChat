@@ -45,8 +45,8 @@ public class ChatWebSocketEndpoint {
         connectionService.addWebSocketSession(userId, session);
 
         MessageSender messageSender = messageSenderFactory.getMessageSender(ConnectionType.WEBSOCKET);
-        messageSender.send(messageService.createGreetingMessage(user), user);
-        messageSender.send(messageService.createRegisterInfoMessage(user), user);
+        messageSender.send(messageService.createGreetingMessage(user));
+        messageSender.send(messageService.createRegisterInfoMessage(user));
     }
 
     @OnClose

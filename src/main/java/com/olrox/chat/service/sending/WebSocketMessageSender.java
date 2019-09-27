@@ -19,9 +19,13 @@ public class WebSocketMessageSender implements MessageSender {
     private WebSocketSessionRepository webSocketConnectionRepository;
 
     @Override
-    public void send(Message message, User user) {
+    public void send(Message message) {
         String data = messageToJson(message);
-        Session session  = webSocketConnectionRepository.get(user.getId());
+
+        User recipient = message.getRecipient();
+        long recipientId = recipient.getId();
+
+        Session session  = webSocketConnectionRepository.get(recipientId);
 
         try {
             session.getBasicRemote().sendText(data);
