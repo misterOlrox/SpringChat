@@ -1,6 +1,5 @@
 package com.olrox.chat.controller.util;
 
-import com.olrox.chat.entity.Message;
 import com.olrox.chat.entity.User;
 
 public abstract class ChatCommand {
@@ -10,7 +9,7 @@ public abstract class ChatCommand {
         this.regex = regex;
     }
 
-    public abstract void execute(User user, Message message);
+    public abstract void execute(User user, String text);
 
     public boolean checkMatch(String text){
         return text.matches(regex);

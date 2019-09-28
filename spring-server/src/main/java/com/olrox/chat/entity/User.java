@@ -1,6 +1,7 @@
 package com.olrox.chat.entity;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "user_table")
@@ -13,6 +14,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private ConnectionType connectionType;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<ChatRoom> chatRooms;
 
     public long getId() {
         return id;
@@ -36,5 +40,17 @@ public class User {
 
     public void setConnectionType(ConnectionType connectionType) {
         this.connectionType = connectionType;
+    }
+
+    public List<ChatRoom> getChatRooms() {
+        return chatRooms;
+    }
+
+    public void setChatRooms(List<ChatRoom> chatRooms) {
+        this.chatRooms = chatRooms;
+    }
+
+    public boolean isRegistered(){
+        return name != null;
     }
 }

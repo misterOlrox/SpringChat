@@ -20,7 +20,7 @@ public class SocketConnectionMessageSender implements MessageSender {
         User recipient = message.getRecipient();
         long recipientId = recipient.getId();
 
-        String senderName = message.getType() == MessageType.SERVER_TO_USER ? "Server" : recipient.getName();
+        String senderName = message.getType() == MessageType.SERVER_INFO ? "Server" : recipient.getName();
 
         String response = "[" + senderName + "] : " + message.getText() + '\n';
 

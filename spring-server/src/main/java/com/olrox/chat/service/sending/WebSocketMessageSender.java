@@ -34,8 +34,9 @@ public class WebSocketMessageSender implements MessageSender {
         }
     }
 
-    private String messageToJson(Message message){
-        String sender = message.getType() == MessageType.SERVER_TO_USER ? "Server" : message.getSender().getName();
+    private String messageToJson(Message message) {
+        String sender = message.getType() != MessageType.USER_TO_USER ? "Server" : message.getSender().getName();
+
         String data = String.valueOf(new JSONObject()
                 .put("author", sender)
                 .put("text", message.getText())

@@ -28,4 +28,10 @@ public class UserService {
 
         return optionalValue.orElseThrow(() -> new RuntimeException("User doesn't exist."));
     }
+
+    public User register(User user, String name) {
+        user.setName(name);
+
+        return userRepository.save(user);
+    }
 }
