@@ -1,6 +1,9 @@
 package com.olrox.chat.controller;
 
+import com.olrox.chat.controller.handler.CommandHandler;
 import com.olrox.chat.entity.ConnectionType;
+import com.olrox.chat.entity.Message;
+import com.olrox.chat.entity.MessageType;
 import com.olrox.chat.entity.User;
 import com.olrox.chat.service.ConnectionService;
 import com.olrox.chat.service.MessageService;
@@ -10,7 +13,11 @@ import com.olrox.chat.tcp.Connection;
 import com.olrox.chat.tcp.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
+import javax.annotation.PostConstruct;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,9 +39,16 @@ public class SocketController {
     @Autowired
     private MessageService messageService;
 
+    @Autowired
+    private List<CommandHandler> commandHandlers;
+
+    @PostConstruct
+    public void init() {
+        commandHandlers.sort(AnnotationAwareOrderComparator.INSTANCE);
+    }
+
     @OnTcpConnect
     public void connect(Connection connection) {
-
         User user = userService.addUnauthorizedUser(ConnectionType.SOCKET);
         Long userId = user.getId();
         connections.put(connection, userId);
@@ -46,29 +60,22 @@ public class SocketController {
 
     @OnTcpDisconnect
     public void disconnect(Connection connection) {
+
     }
 
     @OnTcpMessage
-    public void receiveMessage(Connection connection, String text) {
+    public void receiveMessage(Connection connection, String data) {
+        Long userId = connections.get(connection);
+        User user = userService.getUserById(userId);
+        Message message = messageService.createUserMessage(user, data, MessageType.USER_TO_SERVER);
 
+        for (CommandHandler commandHandler : commandHandlers) {
+            if (commandHandler.checkMatch(data)) {
+                commandHandler.handleCommand(user, data);
+                return;
+            }
+        }
 
-        connection.send("That was just a message\n".getBytes());
-    }
-
-    @OnTcpCommand(regex = "\\/register .+", priority = 1)
-    public void register(Connection connection, String text) {
-
-        connection.send("That was /register\n".getBytes());
-    }
-
-    @OnTcpCommand(regex = "\\/leave", priority = 2)
-    public void leave(Connection connection, String text) {
-
-        connection.send("That was /leave\n".getBytes());
-    }
-
-    @OnTcpCommand(regex = "\\/exit", priority = 3)
-    public void exit(Connection connection, String text) {
-
+        // TODO exception?
     }
 }

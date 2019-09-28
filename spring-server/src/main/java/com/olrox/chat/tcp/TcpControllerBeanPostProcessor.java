@@ -30,7 +30,6 @@ public class TcpControllerBeanPostProcessor implements BeanPostProcessor {
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (map.containsKey(beanName)) {
             List<Method> messageMethods = new ArrayList<>();
-            List<Method> commandMethods = new ArrayList<>();
             List<Method> connectMethods = new ArrayList<>();
             List<Method> disconnectMethods = new ArrayList<>();
             Method[] methods = bean.getClass().getMethods();
@@ -38,9 +37,6 @@ public class TcpControllerBeanPostProcessor implements BeanPostProcessor {
                 if(method.getAnnotation(OnTcpMessage.class) != null && method.getParameterCount() == 2
                         && method.getParameterTypes()[0] == Connection.class) {
                     messageMethods.add(method);
-                } else if (method.getAnnotation(OnTcpCommand.class) != null && method.getParameterCount() == 2
-                        && method.getParameterTypes()[0] == Connection.class) {
-                    commandMethods.add(method);
                 } else if (method.getAnnotation(OnTcpConnect.class) != null && method.getParameterCount() == 1
                         && method.getParameterTypes()[0] == Connection.class) {
                     connectMethods.add(method);
@@ -50,24 +46,10 @@ public class TcpControllerBeanPostProcessor implements BeanPostProcessor {
                 }
             }
 
-            commandMethods.sort(Comparator.comparingInt(o -> o.getAnnotation(OnTcpCommand.class).priority()));
-
             server.addListener(new Connection.Listener() {
                 @Override
                 public void messageReceived(Connection connection, Object message) {
                     String text = new String((byte[])message).trim();
-
-                    for (Method commandMethod : commandMethods) {
-                        String regex = commandMethod.getAnnotation(OnTcpCommand.class).regex();
-                        if (text.matches(regex)) {
-                            try {
-                                commandMethod.invoke(bean, connection, text);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                            return;
-                        }
-                    }
 
                     for(Method messageMethod : messageMethods) {
                         try {
