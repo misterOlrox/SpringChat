@@ -25,7 +25,7 @@ public class TcpServerAutoConfiguration {
     }
 
     @Bean
-    Server server(){
+    Server server() {
         return new TcpServer();
     }
 }

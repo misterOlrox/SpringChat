@@ -10,13 +10,15 @@ import com.olrox.chat.service.MessageService;
 import com.olrox.chat.service.UserService;
 import com.olrox.chat.service.sending.MessageSender;
 import com.olrox.chat.tcp.Connection;
-import com.olrox.chat.tcp.annotation.*;
+import com.olrox.chat.tcp.annotation.OnTcpConnect;
+import com.olrox.chat.tcp.annotation.OnTcpDisconnect;
+import com.olrox.chat.tcp.annotation.OnTcpMessage;
+import com.olrox.chat.tcp.annotation.TcpController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import javax.annotation.PostConstruct;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

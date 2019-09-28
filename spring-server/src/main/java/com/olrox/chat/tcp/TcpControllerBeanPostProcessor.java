@@ -34,7 +34,7 @@ public class TcpControllerBeanPostProcessor implements BeanPostProcessor {
             List<Method> disconnectMethods = new ArrayList<>();
             Method[] methods = bean.getClass().getMethods();
             for (Method method : methods) {
-                if(method.getAnnotation(OnTcpMessage.class) != null && method.getParameterCount() == 2
+                if (method.getAnnotation(OnTcpMessage.class) != null && method.getParameterCount() == 2
                         && method.getParameterTypes()[0] == Connection.class) {
                     messageMethods.add(method);
                 } else if (method.getAnnotation(OnTcpConnect.class) != null && method.getParameterCount() == 1
@@ -49,9 +49,9 @@ public class TcpControllerBeanPostProcessor implements BeanPostProcessor {
             server.addListener(new Connection.Listener() {
                 @Override
                 public void messageReceived(Connection connection, Object message) {
-                    String text = new String((byte[])message).trim();
+                    String text = new String((byte[]) message).trim();
 
-                    for(Method messageMethod : messageMethods) {
+                    for (Method messageMethod : messageMethods) {
                         try {
                             messageMethod.invoke(bean, connection, text);
                         } catch (IllegalAccessException | InvocationTargetException e) {

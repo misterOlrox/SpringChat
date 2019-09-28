@@ -29,7 +29,7 @@ public class ChatRoomService {
         users.add(creator);
         dialogue.setUserList(users);
 
-        if(roleType.equals(Role.Type.AGENT)) {
+        if (roleType.equals(Role.Type.AGENT)) {
             dialogue.setState(ClientAgentDialogue.State.NEED_CLIENT);
         } else {
             dialogue.setState(ClientAgentDialogue.State.NEED_AGENT);

@@ -19,7 +19,7 @@ public class MessageParser {
 
         StringBuilder username = new StringBuilder();
 
-        while (tokenizer.hasMoreTokens()){
+        while (tokenizer.hasMoreTokens()) {
             username.append(tokenizer.nextToken());
         }
 

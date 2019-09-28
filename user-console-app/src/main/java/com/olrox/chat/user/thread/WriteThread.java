@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class WriteThread extends Thread{
+public class WriteThread extends Thread {
     private PrintWriter writer;
     private Socket socket;
 
@@ -27,7 +27,7 @@ public class WriteThread extends Thread{
         String text;
 
         while (true) {
-            if(socket.isClosed()) {
+            if (socket.isClosed()) {
                 System.out.println("Server is not available. Your last message wasn't delivered.");
                 break;
             }
@@ -35,7 +35,7 @@ public class WriteThread extends Thread{
             text = in.nextLine();
             writer.println(text);
 
-            if(text.equals("/exit")) {
+            if (text.equals("/exit")) {
                 try {
                     socket.shutdownInput();
                 } catch (IOException e) {

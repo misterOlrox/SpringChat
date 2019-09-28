@@ -1,6 +1,5 @@
 package com.olrox.chat.service;
 
-import com.olrox.chat.entity.User;
 import com.olrox.chat.repository.SocketConnectionRepository;
 import com.olrox.chat.repository.WebSocketSessionRepository;
 import com.olrox.chat.tcp.Connection;

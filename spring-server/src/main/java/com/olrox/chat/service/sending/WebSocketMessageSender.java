@@ -25,7 +25,7 @@ public class WebSocketMessageSender implements MessageSender {
         User recipient = message.getRecipient();
         long recipientId = recipient.getId();
 
-        Session session  = webSocketConnectionRepository.get(recipientId);
+        Session session = webSocketConnectionRepository.get(recipientId);
 
         try {
             session.getBasicRemote().sendText(data);

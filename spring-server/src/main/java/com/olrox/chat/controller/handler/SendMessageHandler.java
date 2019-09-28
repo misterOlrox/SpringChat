@@ -37,11 +37,10 @@ public class SendMessageHandler implements CommandHandler {
     public void handleCommand(User user, String text) {
         MessageSender messageSender = messageSenderFactory.getMessageSender(user.getConnectionType());
 
-        if(!user.isRegistered()) {
+        if (!user.isRegistered()) {
             Message message = messageService.createRegisterInfoMessage(user);
             messageSender.send(message);
-        }
-        else if(user.getChatRooms() == null || user.getChatRooms().isEmpty()) {
+        } else if (user.getChatRooms() == null || user.getChatRooms().isEmpty()) {
             Message message = messageService.createInfoMessage(user, "You aren't chatting. Your message will not be delivered.");
             messageSender.send(message);
         }

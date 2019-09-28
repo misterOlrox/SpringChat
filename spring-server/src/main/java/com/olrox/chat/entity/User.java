@@ -50,7 +50,7 @@ public class User {
         this.chatRooms = chatRooms;
     }
 
-    public boolean isRegistered(){
+    public boolean isRegistered() {
         return name != null;
     }
 }

@@ -38,7 +38,7 @@ public class RegisterHandler implements CommandHandler {
     public void handleCommand(User user, String text) {
         MessageSender messageSender = messageSenderFactory.getMessageSender(user.getConnectionType());
 
-        if(user.isRegistered()) {
+        if (user.isRegistered()) {
             Message message = messageService.createInfoMessage(user,
                     "You are already registered as " + user.getName());
             messageSender.send(message);
@@ -69,7 +69,7 @@ public class RegisterHandler implements CommandHandler {
 
         String name = params[1];
 
-        if(name == null || name.isEmpty()) {
+        if (name == null || name.isEmpty()) {
             Message errorMessage = messageService.createErrorMessage(user,
                     "You forger to enter your name");
             messageSender.send(errorMessage);
