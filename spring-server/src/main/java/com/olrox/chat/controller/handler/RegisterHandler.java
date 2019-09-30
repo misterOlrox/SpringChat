@@ -1,11 +1,8 @@
 package com.olrox.chat.controller.handler;
 
 import com.olrox.chat.controller.util.MessageParser;
-import com.olrox.chat.entity.Message;
-import com.olrox.chat.entity.MessageType;
-import com.olrox.chat.entity.Role;
-import com.olrox.chat.entity.User;
-import com.olrox.chat.service.ChatRoomService;
+import com.olrox.chat.entity.*;
+import com.olrox.chat.service.SupportChatRoomService;
 import com.olrox.chat.service.MessageService;
 import com.olrox.chat.service.UserService;
 import com.olrox.chat.service.sending.MessageSender;
@@ -24,7 +21,7 @@ public class RegisterHandler implements CommandHandler {
     private UserService userService;
 
     @Autowired
-    private ChatRoomService chatRoomService;
+    private SupportChatRoomService supportChatRoomService;
 
     @Autowired
     private MessageService messageService;
@@ -79,13 +76,18 @@ public class RegisterHandler implements CommandHandler {
             return;
         }
 
-        userService.register(user, name);
-
-        chatRoomService.createNewClientAgentDialogue(user, role);
+        userService.register(user, name, role);
 
         Message message = messageService.createInfoMessage(user,
                 "You are successfully registered as " + user.getName());
         messageSender.send(message);
+
+        if(role.equals(Role.Type.AGENT)) {
+            supportChatRoomService.directUserToChat(user, role);
+        } else if(role.equals(Role.Type.CLIENT)) {
+            messageSender.send(messageService.createInfoMessage(user,
+                    "Type your messages and we will find you an agent."));
+        }
     }
 
     @Override

@@ -13,6 +13,9 @@ public class User {
     private String name;
 
     @Enumerated(EnumType.STRING)
+    private Role.Type currentRoleType;
+
+    @Enumerated(EnumType.STRING)
     private ConnectionType connectionType;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -48,6 +51,14 @@ public class User {
 
     public void setChatRooms(List<ChatRoom> chatRooms) {
         this.chatRooms = chatRooms;
+    }
+
+    public Role.Type getCurrentRoleType() {
+        return currentRoleType;
+    }
+
+    public void setCurrentRoleType(Role.Type currentRoleType) {
+        this.currentRoleType = currentRoleType;
     }
 
     public boolean isRegistered() {

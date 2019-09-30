@@ -1,6 +1,7 @@
 package com.olrox.chat.service;
 
 import com.olrox.chat.entity.ConnectionType;
+import com.olrox.chat.entity.Role;
 import com.olrox.chat.entity.User;
 import com.olrox.chat.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,9 @@ public class UserService {
         return optionalValue.orElseThrow(() -> new RuntimeException("User doesn't exist."));
     }
 
-    public User register(User user, String name) {
+    public User register(User user, String name, Role.Type roleType) {
         user.setName(name);
+        user.setCurrentRoleType(roleType);
 
         return userRepository.save(user);
     }

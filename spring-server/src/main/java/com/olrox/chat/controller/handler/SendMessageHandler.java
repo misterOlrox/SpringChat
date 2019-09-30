@@ -4,7 +4,7 @@ import com.olrox.chat.controller.util.MessageParser;
 import com.olrox.chat.entity.Message;
 import com.olrox.chat.entity.MessageType;
 import com.olrox.chat.entity.User;
-import com.olrox.chat.service.ChatRoomService;
+import com.olrox.chat.service.SupportChatRoomService;
 import com.olrox.chat.service.MessageService;
 import com.olrox.chat.service.UserService;
 import com.olrox.chat.service.sending.MessageSender;
@@ -23,7 +23,7 @@ public class SendMessageHandler implements CommandHandler {
     private UserService userService;
 
     @Autowired
-    private ChatRoomService chatRoomService;
+    private SupportChatRoomService supportChatRoomService;
 
     @Autowired
     private MessageService messageService;
