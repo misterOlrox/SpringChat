@@ -13,7 +13,7 @@ import javax.websocket.Session;
 import java.io.IOException;
 
 @Component(ConnectionType.TypeConstants.WEBSOCKET_SENDER)
-public class WebSocketMessageSender implements MessageSender {
+public class WebSocketSender implements MessageSender {
 
     @Autowired
     private WebSocketSessionRepository webSocketConnectionRepository;
@@ -35,7 +35,7 @@ public class WebSocketMessageSender implements MessageSender {
     }
 
     private String messageToJson(Message message) {
-        String sender = message.getType() != MessageType.USER_TO_USER ? "Server" : message.getSender().getName();
+        String sender = message.getType() != MessageType.USER_TO_CHAT ? "Server" : message.getSender().getName();
 
         String data = String.valueOf(new JSONObject()
                 .put("author", sender)

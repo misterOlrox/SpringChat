@@ -2,8 +2,6 @@ package com.olrox.chat.controller;
 
 import com.olrox.chat.controller.handler.CommandHandler;
 import com.olrox.chat.entity.ConnectionType;
-import com.olrox.chat.entity.Message;
-import com.olrox.chat.entity.MessageType;
 import com.olrox.chat.entity.User;
 import com.olrox.chat.service.ConnectionService;
 import com.olrox.chat.service.MessageService;
@@ -69,7 +67,6 @@ public class SocketController {
     public void receiveMessage(Connection connection, String data) {
         Long userId = connections.get(connection);
         User user = userService.getUserById(userId);
-        Message message = messageService.createUserMessage(user, data, MessageType.USER_TO_SERVER);
 
         for (CommandHandler commandHandler : commandHandlers) {
             if (commandHandler.checkMatch(data)) {

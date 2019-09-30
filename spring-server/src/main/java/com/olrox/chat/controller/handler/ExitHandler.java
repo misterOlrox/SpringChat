@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Order(value = 3)
 public class ExitHandler implements CommandHandler {
 
-    public final static String regex = "/exit";
+    private final static String regex = "/exit";
 
     @Autowired
     private UserService userService;
@@ -34,7 +34,7 @@ public class ExitHandler implements CommandHandler {
     private MessageParser messageParser;
 
     @Override
-    public void handleCommand(User user, String text) {
+    public void handleCommand(User user, String data) {
         MessageSender messageSender = messageSenderFactory.getMessageSender(user.getConnectionType());
 
         if (!user.isRegistered()) {
@@ -49,7 +49,7 @@ public class ExitHandler implements CommandHandler {
     }
 
     @Override
-    public boolean checkMatch(String text) {
-        return text.matches(regex);
+    public boolean checkMatch(String data) {
+        return data.matches(regex);
     }
 }

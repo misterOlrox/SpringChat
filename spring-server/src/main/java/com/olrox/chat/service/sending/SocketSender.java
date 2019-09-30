@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component(ConnectionType.TypeConstants.SOCKET_SENDER)
-public class SocketConnectionMessageSender implements MessageSender {
+public class SocketSender implements MessageSender {
 
     @Autowired
     private SocketConnectionRepository socketConnectionRepository;

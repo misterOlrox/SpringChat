@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Order(value = 2)
 public class LeaveHandler implements CommandHandler {
 
-    public final static String regex = "/leave";
+    private final static String regex = "/leave";
 
     @Autowired
     private UserService userService;
@@ -34,7 +34,7 @@ public class LeaveHandler implements CommandHandler {
     private MessageParser messageParser;
 
     @Override
-    public void handleCommand(User user, String text) {
+    public void handleCommand(User user, String data) {
         MessageSender messageSender = messageSenderFactory.getMessageSender(user.getConnectionType());
 
         if (!user.isRegistered()) {
@@ -49,7 +49,7 @@ public class LeaveHandler implements CommandHandler {
     }
 
     @Override
-    public boolean checkMatch(String text) {
-        return text.matches(regex);
+    public boolean checkMatch(String data) {
+        return data.matches(regex);
     }
 }

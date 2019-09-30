@@ -3,7 +3,7 @@ package com.olrox.chat.controller.handler;
 import com.olrox.chat.entity.User;
 
 public interface CommandHandler {
-    void handleCommand(User user, String text);
+    void handleCommand(User user, String data);
 
-    boolean checkMatch(String text);
+    boolean checkMatch(String data);
 }

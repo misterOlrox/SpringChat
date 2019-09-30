@@ -2,6 +2,7 @@ package com.olrox.chat.controller.handler;
 
 import com.olrox.chat.controller.util.MessageParser;
 import com.olrox.chat.entity.Message;
+import com.olrox.chat.entity.MessageType;
 import com.olrox.chat.entity.User;
 import com.olrox.chat.service.ChatRoomService;
 import com.olrox.chat.service.MessageService;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Order(value = 4)
 public class SendMessageHandler implements CommandHandler {
 
-    public final static String regex = ".*";
+    private final static String regex = ".+";
 
     @Autowired
     private UserService userService;
@@ -34,7 +35,9 @@ public class SendMessageHandler implements CommandHandler {
     private MessageParser messageParser;
 
     @Override
-    public void handleCommand(User user, String text) {
+    public void handleCommand(User user, String data) {
+        messageService.createUserMessage(user, data, MessageType.USER_TO_CHAT);
+
         MessageSender messageSender = messageSenderFactory.getMessageSender(user.getConnectionType());
 
         if (!user.isRegistered()) {
@@ -49,7 +52,7 @@ public class SendMessageHandler implements CommandHandler {
     }
 
     @Override
-    public boolean checkMatch(String text) {
-        return text.matches(regex);
+    public boolean checkMatch(String data) {
+        return data.matches(regex);
     }
 }

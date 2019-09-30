@@ -2,6 +2,7 @@ package com.olrox.chat.controller.handler;
 
 import com.olrox.chat.controller.util.MessageParser;
 import com.olrox.chat.entity.Message;
+import com.olrox.chat.entity.MessageType;
 import com.olrox.chat.entity.Role;
 import com.olrox.chat.entity.User;
 import com.olrox.chat.service.ChatRoomService;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Order(value = 1)
 public class RegisterHandler implements CommandHandler {
 
-    public final static String regex = "/register .+";
+    private final static String regex = "/register .+";
 
     @Autowired
     private UserService userService;
@@ -35,7 +36,9 @@ public class RegisterHandler implements CommandHandler {
     private MessageParser messageParser;
 
     @Override
-    public void handleCommand(User user, String text) {
+    public void handleCommand(User user, String data) {
+        messageService.createUserMessage(user, data, MessageType.USER_TO_SERVER);
+
         MessageSender messageSender = messageSenderFactory.getMessageSender(user.getConnectionType());
 
         if (user.isRegistered()) {
@@ -49,10 +52,10 @@ public class RegisterHandler implements CommandHandler {
         String[] params;
 
         try {
-            params = messageParser.parseRegisterMessage(text);
+            params = messageParser.parseRegisterMessage(data);
         } catch (Exception ex) {
             Message errorMessage = messageService.createErrorMessage(user,
-                    "Wrong command syntax " + text);
+                    "Wrong command syntax " + data);
             messageSender.send(errorMessage);
             return;
         }
@@ -71,7 +74,7 @@ public class RegisterHandler implements CommandHandler {
 
         if (name == null || name.isEmpty()) {
             Message errorMessage = messageService.createErrorMessage(user,
-                    "You forger to enter your name");
+                    "You forget to enter your name");
             messageSender.send(errorMessage);
             return;
         }
@@ -86,7 +89,7 @@ public class RegisterHandler implements CommandHandler {
     }
 
     @Override
-    public boolean checkMatch(String text) {
-        return text.matches(regex);
+    public boolean checkMatch(String data) {
+        return data.matches(regex);
     }
 }
