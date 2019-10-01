@@ -6,14 +6,13 @@ import com.olrox.chat.entity.User;
 import com.olrox.chat.service.ConnectionService;
 import com.olrox.chat.service.MessageService;
 import com.olrox.chat.service.UserService;
-import com.olrox.chat.service.sending.MessageSender;
+import com.olrox.chat.service.sending.GeneralSender;
 import com.olrox.chat.tcp.Connection;
 import com.olrox.chat.tcp.annotation.OnTcpConnect;
 import com.olrox.chat.tcp.annotation.OnTcpDisconnect;
 import com.olrox.chat.tcp.annotation.OnTcpMessage;
 import com.olrox.chat.tcp.annotation.TcpController;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import javax.annotation.PostConstruct;
@@ -33,8 +32,7 @@ public class SocketController {
     private UserService userService;
 
     @Autowired
-    @Qualifier(ConnectionType.TypeConstants.SOCKET_SENDER)
-    private MessageSender messageSender;
+    private GeneralSender generalSender;
 
     @Autowired
     private MessageService messageService;
@@ -54,8 +52,8 @@ public class SocketController {
         connections.put(connection, userId);
         connectionService.addSocketConnection(userId, connection);
 
-        messageSender.send(messageService.createGreetingMessage(user));
-        messageSender.send(messageService.createRegisterInfoMessage(user));
+        generalSender.send(messageService.createGreetingMessage(user));
+        generalSender.send(messageService.createRegisterInfoMessage(user));
     }
 
     @OnTcpDisconnect

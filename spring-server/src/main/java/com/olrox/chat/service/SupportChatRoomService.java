@@ -1,13 +1,11 @@
 package com.olrox.chat.service;
 
-import com.olrox.chat.entity.ChatRoom;
-import com.olrox.chat.entity.SupportChatRoom;
 import com.olrox.chat.entity.Role;
+import com.olrox.chat.entity.SupportChatRoom;
 import com.olrox.chat.entity.User;
 import com.olrox.chat.repository.RoleRepository;
 import com.olrox.chat.repository.SupportChatRoomRepository;
-import com.olrox.chat.service.sending.MessageSender;
-import com.olrox.chat.service.sending.MessageSenderFactory;
+import com.olrox.chat.service.sending.GeneralSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +23,7 @@ public class SupportChatRoomService {
     private RoleRepository roleRepository;
 
     @Autowired
-    private MessageSenderFactory messageSenderFactory;
+    private GeneralSender generalSender;
 
     @Autowired
     private MessageService messageService;
@@ -56,8 +54,6 @@ public class SupportChatRoomService {
     }
 
     public void directUserToChat(User user, Role.Type role) {
-        MessageSender messageSender = messageSenderFactory.getMessageSender(user.getConnectionType());
-
         SupportChatRoom chat;
 
         switch(role) {
@@ -66,7 +62,7 @@ public class SupportChatRoomService {
 
                 if(chat == null) {
                     chat = createNewChat(user, role);
-                    messageSender.send(messageService.createInfoMessage(user,
+                    generalSender.send(messageService.createInfoMessage(user,
                             "We haven't free agents. You can write messages and they will be delivered."));
                 } else {
                     addToChat(user, chat);
@@ -77,7 +73,7 @@ public class SupportChatRoomService {
 
                 if(chat == null) {
                     chat = createNewChat(user, role);
-                    messageSender.send(messageService.createInfoMessage(user,
+                    generalSender.send(messageService.createInfoMessage(user,
                             "There aren't free clients. Wait..."));
                 } else {
                     addToChat(user, chat);

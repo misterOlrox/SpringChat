@@ -1,6 +1,5 @@
 package com.olrox.chat.service.sending;
 
-import com.olrox.chat.entity.ConnectionType;
 import com.olrox.chat.entity.Message;
 import com.olrox.chat.entity.MessageType;
 import com.olrox.chat.entity.User;
@@ -12,13 +11,12 @@ import org.springframework.stereotype.Component;
 import javax.websocket.Session;
 import java.io.IOException;
 
-@Component(ConnectionType.TypeConstants.WEBSOCKET_SENDER)
-public class WebSocketSender implements MessageSender {
+@Component
+public class WebSocketSender {
 
     @Autowired
     private WebSocketSessionRepository webSocketConnectionRepository;
 
-    @Override
     public void send(Message message) {
         String data = messageToJson(message);
 

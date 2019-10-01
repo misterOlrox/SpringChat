@@ -7,9 +7,8 @@ import com.olrox.chat.entity.User;
 import com.olrox.chat.service.ConnectionService;
 import com.olrox.chat.service.MessageService;
 import com.olrox.chat.service.UserService;
-import com.olrox.chat.service.sending.MessageSender;
+import com.olrox.chat.service.sending.GeneralSender;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import javax.annotation.PostConstruct;
@@ -37,8 +36,7 @@ public class ChatWebSocketEndpoint {
     private MessageService messageService;
 
     @Autowired
-    @Qualifier(ConnectionType.TypeConstants.WEBSOCKET_SENDER)
-    private MessageSender messageSender;
+    private GeneralSender generalSender;
 
     @Autowired
     private List<CommandHandler> commandHandlers;
@@ -55,8 +53,8 @@ public class ChatWebSocketEndpoint {
         sessions.put(session, userId);
         connectionService.addWebSocketSession(userId, session);
 
-        messageSender.send(messageService.createGreetingMessage(user));
-        messageSender.send(messageService.createRegisterInfoMessage(user));
+        generalSender.send(messageService.createGreetingMessage(user));
+        generalSender.send(messageService.createRegisterInfoMessage(user));
     }
 
     @OnClose

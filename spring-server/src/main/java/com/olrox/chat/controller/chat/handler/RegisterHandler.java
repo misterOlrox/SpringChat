@@ -1,12 +1,14 @@
 package com.olrox.chat.controller.chat.handler;
 
 import com.olrox.chat.controller.util.MessageParser;
-import com.olrox.chat.entity.*;
-import com.olrox.chat.service.SupportChatRoomService;
+import com.olrox.chat.entity.Message;
+import com.olrox.chat.entity.MessageType;
+import com.olrox.chat.entity.Role;
+import com.olrox.chat.entity.User;
 import com.olrox.chat.service.MessageService;
+import com.olrox.chat.service.SupportChatRoomService;
 import com.olrox.chat.service.UserService;
-import com.olrox.chat.service.sending.MessageSender;
-import com.olrox.chat.service.sending.MessageSenderFactory;
+import com.olrox.chat.service.sending.GeneralSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -27,7 +29,7 @@ public class RegisterHandler implements CommandHandler {
     private MessageService messageService;
 
     @Autowired
-    private MessageSenderFactory messageSenderFactory;
+    private GeneralSender generalSender;
 
     @Autowired
     private MessageParser messageParser;
@@ -36,12 +38,10 @@ public class RegisterHandler implements CommandHandler {
     public void handleCommand(User user, String data) {
         messageService.createUserMessage(user, data, MessageType.USER_TO_SERVER);
 
-        MessageSender messageSender = messageSenderFactory.getMessageSender(user.getConnectionType());
-
         if (user.isRegistered()) {
             Message message = messageService.createInfoMessage(user,
                     "You are already registered as " + user.getName());
-            messageSender.send(message);
+            generalSender.send(message);
 
             return;
         }
@@ -53,7 +53,7 @@ public class RegisterHandler implements CommandHandler {
         } catch (Exception ex) {
             Message errorMessage = messageService.createErrorMessage(user,
                     "Wrong command syntax " + data);
-            messageSender.send(errorMessage);
+            generalSender.send(errorMessage);
             return;
         }
 
@@ -63,7 +63,7 @@ public class RegisterHandler implements CommandHandler {
             role = Role.Type.valueOf(params[0].toUpperCase());
         } catch (IllegalArgumentException ex) {
             Message errorMessage = messageService.createErrorMessage(user, "Wrong role " + params[0]);
-            messageSender.send(errorMessage);
+            generalSender.send(errorMessage);
             return;
         }
 
@@ -72,20 +72,21 @@ public class RegisterHandler implements CommandHandler {
         if (name == null || name.isEmpty()) {
             Message errorMessage = messageService.createErrorMessage(user,
                     "You forget to enter your name");
-            messageSender.send(errorMessage);
+            generalSender.send(errorMessage);
             return;
         }
 
         userService.register(user, name, role);
 
         Message message = messageService.createInfoMessage(user,
-                "You are successfully registered as " + user.getName());
-        messageSender.send(message);
+                "You are successfully registered as "
+                        + user.getCurrentRoleType().name().toLowerCase() + " " + user.getName());
+        generalSender.send(message);
 
         if(role.equals(Role.Type.AGENT)) {
             supportChatRoomService.directUserToChat(user, role);
         } else if(role.equals(Role.Type.CLIENT)) {
-            messageSender.send(messageService.createInfoMessage(user,
+            generalSender.send(messageService.createInfoMessage(user,
                     "Type your messages and we will find you an agent."));
         }
     }

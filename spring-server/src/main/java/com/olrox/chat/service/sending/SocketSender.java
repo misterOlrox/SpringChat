@@ -1,6 +1,5 @@
 package com.olrox.chat.service.sending;
 
-import com.olrox.chat.entity.ConnectionType;
 import com.olrox.chat.entity.Message;
 import com.olrox.chat.entity.MessageType;
 import com.olrox.chat.entity.User;
@@ -9,13 +8,12 @@ import com.olrox.chat.tcp.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component(ConnectionType.TypeConstants.SOCKET_SENDER)
-public class SocketSender implements MessageSender {
+@Component
+public class SocketSender {
 
     @Autowired
     private SocketConnectionRepository socketConnectionRepository;
 
-    @Override
     public void send(Message message) {
         User recipient = message.getRecipient();
         long recipientId = recipient.getId();
