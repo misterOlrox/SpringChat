@@ -17,7 +17,7 @@ public class InfoRestController {
     private UserService userService;
 
     @GetMapping("/agents")
-    List<User> all() {
+    List<User> allAgents() {
         return userService.findAllAgents();
     }
 }
