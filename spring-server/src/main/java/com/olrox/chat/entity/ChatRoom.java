@@ -14,6 +14,9 @@ public class ChatRoom {
     private Long id;
 
     @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "chat_room_user_table",
+            joinColumns = @JoinColumn(name = "chat_room_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
     private List<User> userList;
 
     @OneToMany

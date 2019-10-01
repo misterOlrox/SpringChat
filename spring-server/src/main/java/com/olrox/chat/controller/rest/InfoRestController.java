@@ -18,6 +18,11 @@ public class InfoRestController {
 
     @GetMapping("/agents")
     List<User> allAgents() {
-        return userService.findAllAgents();
+        return userService.getAllAgents();
+    }
+
+    @GetMapping("/agents/free")
+    List<User> freeAgents() {
+        return userService.getFreeAgents();
     }
 }

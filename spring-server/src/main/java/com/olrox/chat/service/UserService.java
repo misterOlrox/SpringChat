@@ -38,7 +38,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public List<User> findAllAgents() {
+    public List<User> getAllAgents() {
         return userRepository.findAllByCurrentRoleTypeEquals(Role.Type.AGENT);
+    }
+
+    public List<User> getFreeAgents() {
+        return userRepository.findFreeAgents();
     }
 }
