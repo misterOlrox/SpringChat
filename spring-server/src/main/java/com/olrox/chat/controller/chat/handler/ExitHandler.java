@@ -1,8 +1,7 @@
-package com.olrox.chat.controller.handler;
+package com.olrox.chat.controller.chat.handler;
 
 import com.olrox.chat.controller.util.MessageParser;
 import com.olrox.chat.entity.Message;
-import com.olrox.chat.entity.MessageType;
 import com.olrox.chat.entity.User;
 import com.olrox.chat.service.SupportChatRoomService;
 import com.olrox.chat.service.MessageService;
@@ -14,10 +13,10 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
-@Order(value = 4)
-public class SendMessageHandler implements CommandHandler {
+@Order(value = 3)
+public class ExitHandler implements CommandHandler {
 
-    private final static String regex = ".+";
+    private final static String regex = "/exit";
 
     @Autowired
     private UserService userService;
@@ -36,8 +35,6 @@ public class SendMessageHandler implements CommandHandler {
 
     @Override
     public void handleCommand(User user, String data) {
-        messageService.createUserMessage(user, data, MessageType.USER_TO_CHAT);
-
         MessageSender messageSender = messageSenderFactory.getMessageSender(user.getConnectionType());
 
         if (!user.isRegistered()) {

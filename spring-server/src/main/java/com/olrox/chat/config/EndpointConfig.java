@@ -1,6 +1,6 @@
 package com.olrox.chat.config;
 
-import com.olrox.chat.controller.ChatWebSocketEndpoint;
+import com.olrox.chat.controller.chat.ChatWebSocketEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;

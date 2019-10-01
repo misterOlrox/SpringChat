@@ -1,6 +1,6 @@
-package com.olrox.chat.controller;
+package com.olrox.chat.controller.chat;
 
-import com.olrox.chat.controller.handler.CommandHandler;
+import com.olrox.chat.controller.chat.handler.CommandHandler;
 import com.olrox.chat.entity.ConnectionType;
 import com.olrox.chat.entity.User;
 import com.olrox.chat.service.ConnectionService;

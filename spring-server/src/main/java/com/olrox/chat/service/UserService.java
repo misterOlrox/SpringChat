@@ -7,6 +7,7 @@ import com.olrox.chat.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,5 +36,9 @@ public class UserService {
         user.setCurrentRoleType(roleType);
 
         return userRepository.save(user);
+    }
+
+    public List<User> findAllAgents() {
+        return userRepository.findAllByCurrentRoleTypeEquals(Role.Type.AGENT);
     }
 }

@@ -1,4 +1,4 @@
-package com.olrox.chat.controller.handler;
+package com.olrox.chat.controller.chat.handler;
 
 import com.olrox.chat.entity.User;
 
