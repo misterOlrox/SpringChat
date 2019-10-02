@@ -2,6 +2,8 @@ package com.olrox.chat.repository;
 
 import com.olrox.chat.entity.Role;
 import com.olrox.chat.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -12,6 +14,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByName(String name);
 
     List<User> findAllByCurrentRoleTypeEquals(Role.Type role);
+
+    Page<User> findAllByCurrentRoleTypeEquals(Role.Type currentRoleType, Pageable pageable);
 
     @Query("SELECT chat.userList\n" +
             "FROM SupportChatRoom as chat\n" +

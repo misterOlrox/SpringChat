@@ -5,6 +5,8 @@ import com.olrox.chat.entity.Role;
 import com.olrox.chat.entity.User;
 import com.olrox.chat.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,6 +42,10 @@ public class UserService {
 
     public List<User> getAllAgents() {
         return userRepository.findAllByCurrentRoleTypeEquals(Role.Type.AGENT);
+    }
+
+    public Page<User> getAllAgentsPage(Pageable pageable) {
+        return userRepository.findAllByCurrentRoleTypeEquals(Role.Type.AGENT, pageable);
     }
 
     public List<User> getFreeAgents() {
