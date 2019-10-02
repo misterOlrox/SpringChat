@@ -1,4 +1,4 @@
-package com.olrox.chat.controller.rest;
+package com.olrox.chat.rest;
 
 import com.olrox.chat.dto.EntityToDtoConverter;
 import com.olrox.chat.dto.AmountDto;

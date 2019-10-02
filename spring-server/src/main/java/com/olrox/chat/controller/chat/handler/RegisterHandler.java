@@ -23,9 +23,6 @@ public class RegisterHandler implements CommandHandler {
     private UserService userService;
 
     @Autowired
-    private SupportChatRoomService supportChatRoomService;
-
-    @Autowired
     private MessageService messageService;
 
     @Autowired
