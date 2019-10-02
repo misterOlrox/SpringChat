@@ -17,12 +17,11 @@ public class WebSocketSender {
     @Autowired
     private WebSocketSessionRepository webSocketConnectionRepository;
 
-    public void send(Message message) {
-        String data = messageToJson(message);
+    public void send(Message message, User sender, User recipient) {
+        String senderName = message.getType() != MessageType.USER_TO_CHAT ? "Server" : message.getSender().getName();
+        String data = messageToJson(message, senderName);
 
-        User recipient = message.getRecipient();
         long recipientId = recipient.getId();
-
         Session session = webSocketConnectionRepository.get(recipientId);
 
         try {
@@ -32,11 +31,9 @@ public class WebSocketSender {
         }
     }
 
-    private String messageToJson(Message message) {
-        String sender = message.getType() != MessageType.USER_TO_CHAT ? "Server" : message.getSender().getName();
-
+    private String messageToJson(Message message, String senderName) {
         String data = String.valueOf(new JSONObject()
-                .put("author", sender)
+                .put("author", senderName)
                 .put("text", message.getText())
                 .put("time", message.getSendTime()));
 

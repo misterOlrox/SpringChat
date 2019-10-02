@@ -14,14 +14,11 @@ public class SocketSender {
     @Autowired
     private SocketConnectionRepository socketConnectionRepository;
 
-    public void send(Message message) {
-        User recipient = message.getRecipient();
-        long recipientId = recipient.getId();
-
-        String senderName = message.getType() == MessageType.SERVER_INFO ? "Server" : recipient.getName();
-
+    public void send(Message message, User sender, User recipient) {
+        String senderName = message.getType() == MessageType.SERVER_INFO ? "Server" : sender.getName();
         String response = "[" + senderName + "] : " + message.getText() + '\n';
 
+        long recipientId = recipient.getId();
         Connection connection = socketConnectionRepository.get(recipientId);
 
         connection.send(response.getBytes());

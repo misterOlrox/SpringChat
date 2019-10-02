@@ -3,7 +3,6 @@ package com.olrox.chat.entity;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "message_table")
@@ -16,18 +15,16 @@ public class Message {
     private MessageType type;
 
     @ManyToOne
-    private User sender;
-
-    @ManyToOne
     private ChatRoom chatRoom;
-
-    @OneToOne
-    private User recipient;
 
     private String text;
     private LocalDateTime sendTime;
 
-    private boolean isDelivered;
+    @ManyToOne
+    private User sender;
+
+    @OneToMany
+    private List<MessageDetail> messageDetails;
 
     public Message() {
     }
@@ -46,22 +43,6 @@ public class Message {
 
     public void setType(MessageType type) {
         this.type = type;
-    }
-
-    public User getSender() {
-        return sender;
-    }
-
-    public void setSender(User sender) {
-        this.sender = sender;
-    }
-
-    public User getRecipient() {
-        return recipient;
-    }
-
-    public void setRecipient(User recipient) {
-        this.recipient = recipient;
     }
 
     public String getText() {
@@ -88,31 +69,19 @@ public class Message {
         this.chatRoom = chatRoom;
     }
 
-    public boolean isDelivered() {
-        return isDelivered;
+    public User getSender() {
+        return sender;
     }
 
-    public void setDelivered(boolean delivered) {
-        isDelivered = delivered;
+    public void setSender(User sender) {
+        this.sender = sender;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Message message = (Message) o;
-        return isDelivered == message.isDelivered &&
-                Objects.equals(id, message.id) &&
-                type == message.type &&
-                Objects.equals(sender, message.sender) &&
-                Objects.equals(chatRoom, message.chatRoom) &&
-                Objects.equals(recipient, message.recipient) &&
-                Objects.equals(text, message.text) &&
-                Objects.equals(sendTime, message.sendTime);
+    public List<MessageDetail> getMessageDetails() {
+        return messageDetails;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, type, sender, chatRoom, recipient, text, sendTime, isDelivered);
+    public void setMessageDetails(List<MessageDetail> messageDetails) {
+        this.messageDetails = messageDetails;
     }
 }

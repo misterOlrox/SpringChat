@@ -2,10 +2,14 @@ package com.olrox.chat.service.sending;
 
 import com.olrox.chat.entity.ConnectionType;
 import com.olrox.chat.entity.Message;
-import com.olrox.chat.repository.MessageRepository;
+import com.olrox.chat.entity.User;
+import com.olrox.chat.entity.MessageDetail;
+import com.olrox.chat.service.MessageDetailsService;
 import com.olrox.chat.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class GeneralSender {
@@ -17,19 +21,27 @@ public class GeneralSender {
     private WebSocketSender webSocketSender;
 
     @Autowired
-    private MessageService messageService;
+    private MessageDetailsService messageDetailService;
 
     public void send(Message message) {
-        ConnectionType connectionType = message.getRecipient().getConnectionType();
+        List<MessageDetail> details = message.getMessageDetails();
+        User sender = message.getSender();
 
-        switch (connectionType) {
-            case SOCKET:
-                socketSender.send(message);
-                messageService.markMessageAsDelivered(message);
-                return;
-            case WEBSOCKET:
-                webSocketSender.send(message);
-                messageService.markMessageAsDelivered(message);
+        for(MessageDetail detail : details) {
+            if(detail.getStatus().equals(MessageDetail.Status.NOT_RECEIVED)) {
+                User recipient = detail.getUser();
+                ConnectionType connectionType = recipient.getConnectionType();
+
+                switch (connectionType) {
+                    case SOCKET:
+                        socketSender.send(message, sender, recipient);
+                        messageDetailService.markAsReceived(detail);
+                        return;
+                    case WEBSOCKET:
+                        webSocketSender.send(message, sender, recipient);
+                        messageDetailService.markAsReceived(detail);
+                }
+            }
         }
     }
 
