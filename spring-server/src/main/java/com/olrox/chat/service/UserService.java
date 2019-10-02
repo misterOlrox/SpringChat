@@ -1,10 +1,12 @@
 package com.olrox.chat.service;
 
 import com.olrox.chat.entity.ConnectionType;
+import com.olrox.chat.entity.Message;
 import com.olrox.chat.entity.Role;
 import com.olrox.chat.entity.User;
 import com.olrox.chat.exception.UserNotFoundException;
 import com.olrox.chat.repository.UserRepository;
+import com.olrox.chat.service.sending.GeneralSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -19,6 +21,15 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private MessageService messageService;
+
+    @Autowired
+    private GeneralSender generalSender;
+
+    @Autowired
+    private SupportChatRoomService supportChatRoomService;
 
     public User addUnauthorizedUser(ConnectionType connectionType) {
         User newUser = new User();
@@ -35,11 +46,25 @@ public class UserService {
         return optionalValue.orElseThrow(() -> new UserNotFoundException("User doesn't exist."));
     }
 
-    public User register(User user, String name, Role.Type roleType) {
-        user.setName(name);
-        user.setCurrentRoleType(roleType);
+    public User register(User user, Role.Type role) {
+        user.setCurrentRoleType(role);
 
-        return userRepository.save(user);
+        user = userRepository.save(user);
+
+        Message message = messageService.createInfoMessage(user,
+                "You are successfully registered as "
+                        + user.getCurrentRoleType().name().toLowerCase() + " " + user.getName());
+        generalSender.send(message);
+
+
+        if(role.equals(Role.Type.AGENT)) {
+            supportChatRoomService.directUserToChat(user);
+        } else if(role.equals(Role.Type.CLIENT)) {
+            generalSender.send(messageService.createInfoMessage(user,
+                    "Type your messages and we will find you an agent."));
+        }
+
+        return user;
     }
 
     public List<User> getAllAgents() {

@@ -76,19 +76,8 @@ public class RegisterHandler implements CommandHandler {
             return;
         }
 
-        userService.register(user, name, role);
-
-        Message message = messageService.createInfoMessage(user,
-                "You are successfully registered as "
-                        + user.getCurrentRoleType().name().toLowerCase() + " " + user.getName());
-        generalSender.send(message);
-
-        if(role.equals(Role.Type.AGENT)) {
-            supportChatRoomService.directUserToChat(user, role);
-        } else if(role.equals(Role.Type.CLIENT)) {
-            generalSender.send(messageService.createInfoMessage(user,
-                    "Type your messages and we will find you an agent."));
-        }
+        user.setName(name);
+        userService.register(user, role);
     }
 
     @Override

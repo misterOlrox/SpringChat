@@ -1,13 +1,13 @@
-package com.olrox.chat.controller.mvc;
+package com.olrox.chat.controller.web;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class ChatController {
+public class MainController {
 
     @GetMapping("/")
-    public String chat() {
+    public String main() {
         return "index";
     }
 }

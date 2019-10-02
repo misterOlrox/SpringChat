@@ -27,6 +27,8 @@ public class Message {
     private String text;
     private LocalDateTime sendTime;
 
+    private boolean isDelivered;
+
     public Message() {
     }
 
@@ -86,12 +88,21 @@ public class Message {
         this.chatRoom = chatRoom;
     }
 
+    public boolean isDelivered() {
+        return isDelivered;
+    }
+
+    public void setDelivered(boolean delivered) {
+        isDelivered = delivered;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Message message = (Message) o;
-        return Objects.equals(id, message.id) &&
+        return isDelivered == message.isDelivered &&
+                Objects.equals(id, message.id) &&
                 type == message.type &&
                 Objects.equals(sender, message.sender) &&
                 Objects.equals(chatRoom, message.chatRoom) &&
@@ -102,6 +113,6 @@ public class Message {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, type, sender, chatRoom, recipient, text, sendTime);
+        return Objects.hash(id, type, sender, chatRoom, recipient, text, sendTime, isDelivered);
     }
 }

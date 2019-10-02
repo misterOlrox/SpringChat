@@ -15,6 +15,11 @@ public class MessageService {
     @Autowired
     private MessageRepository messageRepository;
 
+    public void markMessageAsDelivered(Message message) {
+        message.setDelivered(true);
+        messageRepository.save(message);
+    }
+
     public Message createUserMessage(User user, String text, MessageType type) {
         Message message = new Message();
         message.setSender(user);

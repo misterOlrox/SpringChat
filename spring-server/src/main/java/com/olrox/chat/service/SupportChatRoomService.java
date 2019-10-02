@@ -53,8 +53,10 @@ public class SupportChatRoomService {
         return dialogue;
     }
 
-    public void directUserToChat(User user, Role.Type role) {
+    public void directUserToChat(User user) {
         SupportChatRoom chat;
+
+        Role.Type role = user.getCurrentRoleType();
 
         switch(role) {
             case CLIENT:
