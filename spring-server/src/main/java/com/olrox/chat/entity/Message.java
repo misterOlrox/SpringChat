@@ -23,7 +23,7 @@ public class Message {
     @ManyToOne
     private User sender;
 
-    @OneToMany
+    @OneToMany(mappedBy = "message")
     private List<MessageDetail> messageDetails;
 
     public Message() {

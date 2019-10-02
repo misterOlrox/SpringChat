@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface SupportChatRoomRepository extends JpaRepository<SupportChatRoom, Long> {
 
     SupportChatRoom findFirstByStateOrderByCreationDateAsc(SupportChatRoom.State state);
+
+    SupportChatRoom findFirstByStateOrderByCreationDateDesc(SupportChatRoom.State state);
 }

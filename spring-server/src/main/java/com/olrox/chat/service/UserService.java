@@ -1,9 +1,6 @@
 package com.olrox.chat.service;
 
-import com.olrox.chat.entity.ConnectionType;
-import com.olrox.chat.entity.Message;
-import com.olrox.chat.entity.Role;
-import com.olrox.chat.entity.User;
+import com.olrox.chat.entity.*;
 import com.olrox.chat.exception.UserNotFoundException;
 import com.olrox.chat.repository.UserRepository;
 import com.olrox.chat.service.sending.GeneralSender;
@@ -65,6 +62,12 @@ public class UserService {
         }
 
         return user;
+    }
+
+    public void sendMessageFromUser(Message message, User user) {
+
+
+
     }
 
     public List<User> getAllAgents() {

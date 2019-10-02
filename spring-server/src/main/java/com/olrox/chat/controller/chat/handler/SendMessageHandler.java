@@ -35,14 +35,18 @@ public class SendMessageHandler implements CommandHandler {
 
     @Override
     public void handleCommand(User user, String data) {
-        messageService.createUserMessage(user, data, MessageType.USER_TO_CHAT);
+        Message message = messageService.createUserMessage(user, data, MessageType.USER_TO_CHAT);
 
         if (!user.isRegistered()) {
-            Message message = messageService.createRegisterInfoMessage(user);
-            generalSender.send(message);
+            Message infoMessage = messageService.createRegisterInfoMessage(user);
+            generalSender.send(infoMessage);
         } else if (user.getChatRooms() == null || user.getChatRooms().isEmpty()) {
-            Message message = messageService.createInfoMessage(user, "You aren't chatting. Your message will not be delivered.");
-            generalSender.send(message);
+//            Message message = messageService.createInfoMessage(user,
+//                    "You aren't chatting. Your message will not be delivered.");
+//            generalSender.send(message);
+            supportChatRoomService.directUserToChat(user);
+        } else {
+            supportChatRoomService.broadcast(message);
         }
 
 

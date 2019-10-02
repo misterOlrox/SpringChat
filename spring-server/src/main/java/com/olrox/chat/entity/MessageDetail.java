@@ -3,7 +3,7 @@ package com.olrox.chat.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "message_recipients_table")
+@Table(name = "message_detail_table")
 public class MessageDetail {
     public enum Status {
         RECEIVED,
@@ -15,9 +15,11 @@ public class MessageDetail {
     private Long id;
 
     @OneToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
+    @JoinColumn(name = "message_id")
     private Message message;
 
     @Enumerated(EnumType.STRING)
