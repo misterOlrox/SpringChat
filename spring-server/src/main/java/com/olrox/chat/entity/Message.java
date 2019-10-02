@@ -3,6 +3,7 @@ package com.olrox.chat.entity;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "message_table")
@@ -83,5 +84,24 @@ public class Message {
 
     public void setChatRoom(ChatRoom chatRoom) {
         this.chatRoom = chatRoom;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Message message = (Message) o;
+        return Objects.equals(id, message.id) &&
+                type == message.type &&
+                Objects.equals(sender, message.sender) &&
+                Objects.equals(chatRoom, message.chatRoom) &&
+                Objects.equals(recipient, message.recipient) &&
+                Objects.equals(text, message.text) &&
+                Objects.equals(sendTime, message.sendTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, type, sender, chatRoom, recipient, text, sendTime);
     }
 }

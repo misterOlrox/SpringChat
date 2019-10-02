@@ -20,7 +20,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT chat.userList\n" +
             "FROM SupportChatRoom as chat\n" +
             "WHERE chat.state='NEED_CLIENT'")
-    List<User> findFreeAgents();
+    Page<User> findFreeAgents(Pageable pageable);
 //
 //    @Query("SELECT user.id FROM\n" +
 //            "user_table user\n" +

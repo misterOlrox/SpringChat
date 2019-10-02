@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
   <head>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <title>Chat</title>
-      <link rel="stylesheet" href="/css/style.css" />
+      <link rel="stylesheet" th:href="@{/css/style.css}" />
   </head>
   <body>
     <noscript>
@@ -16,6 +16,6 @@
         <button id="send">Send</button>
     </div>
 
-    <script src="/js/websocketDemo.js"></script>
+    <script th:src="@{/js/websocketDemo.js}"></script>
   </body>
 </html>

@@ -3,6 +3,7 @@ package com.olrox.chat.entity;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "chat_room_table")
@@ -54,5 +55,21 @@ public class ChatRoom {
 
     public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChatRoom chatRoom = (ChatRoom) o;
+        return Objects.equals(id, chatRoom.id) &&
+                Objects.equals(userList, chatRoom.userList) &&
+                Objects.equals(messageHistory, chatRoom.messageHistory) &&
+                Objects.equals(creationDate, chatRoom.creationDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, userList, messageHistory, creationDate);
     }
 }

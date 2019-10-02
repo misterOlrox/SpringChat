@@ -48,7 +48,7 @@ public class UserService {
         return userRepository.findAllByCurrentRoleTypeEquals(Role.Type.AGENT, pageable);
     }
 
-    public List<User> getFreeAgents() {
-        return userRepository.findFreeAgents();
+    public Page<User> getFreeAgents(Pageable pageable) {
+        return userRepository.findFreeAgents(pageable);
     }
 }

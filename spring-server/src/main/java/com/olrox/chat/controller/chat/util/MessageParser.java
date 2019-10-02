@@ -1,4 +1,4 @@
-package com.olrox.chat.controller.util;
+package com.olrox.chat.controller.chat.util;
 
 import org.springframework.stereotype.Component;
 
