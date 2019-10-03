@@ -6,9 +6,10 @@ import com.olrox.chat.service.SupportChatRoomService;
 import com.olrox.chat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 
-@Controller
+@Component
 @Order(value = 3)
 public class ExitHandler implements CommandHandler {
 

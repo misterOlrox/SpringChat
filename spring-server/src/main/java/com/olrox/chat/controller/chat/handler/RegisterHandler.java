@@ -5,18 +5,16 @@ import com.olrox.chat.entity.Message;
 import com.olrox.chat.entity.MessageType;
 import com.olrox.chat.entity.Role;
 import com.olrox.chat.entity.User;
-import com.olrox.chat.exception.EmptyNameException;
 import com.olrox.chat.service.MessageService;
 import com.olrox.chat.service.UserService;
 import com.olrox.chat.service.sending.GeneralSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.stereotype.Component;
 
-@Controller
+@Component
 @Order(value = 1)
-public class RegisterHandler implements CommandHandler{
+public class RegisterHandler implements CommandHandler {
 
     private final static String regex = "/register .+";
 
@@ -53,15 +51,19 @@ public class RegisterHandler implements CommandHandler{
         try {
             role = Role.Type.valueOf(parsedRole.toUpperCase());
         } catch (IllegalArgumentException ex) {
-            Message errorMessage = messageService.createErrorMessage(user, "Wrong role " + parsedRole);
-            generalSender.send(errorMessage);
+            sendWrongRoleMessage(user, parsedRole);
+            return;
+        }
+
+        if (parsedName == null || parsedName.isEmpty()) {
+            sendEmptyNameMessage(user);
             return;
         }
 
         userService.register(user, parsedName, role);
     }
 
-    public void sendAlreadyRegisteredMessage(User user) {
+    private void sendAlreadyRegisteredMessage(User user) {
         Message message = messageService.createInfoMessage(user,
                 "You are already registered as "
                         + user.getCurrentRoleType().toString().toLowerCase()
@@ -69,12 +71,18 @@ public class RegisterHandler implements CommandHandler{
         generalSender.send(message);
     }
 
-    @ExceptionHandler(EmptyNameException.class)
-    public void handleException(EmptyNameException exception) {
-        User user = exception.getUser();
-
+    private void sendEmptyNameMessage(User user) {
         Message errorMessage = messageService.createErrorMessage(user,
                 "You forget to enter your name");
         generalSender.send(errorMessage);
+        Message register = messageService.createRegisterInfoMessage(user);
+        generalSender.send(register);
+    }
+
+    private void sendWrongRoleMessage(User user, String parsedRole) {
+        Message errorMessage = messageService.createErrorMessage(user, "Wrong role " + parsedRole);
+        generalSender.send(errorMessage);
+        Message register = messageService.createRegisterInfoMessage(user);
+        generalSender.send(register);
     }
 }
