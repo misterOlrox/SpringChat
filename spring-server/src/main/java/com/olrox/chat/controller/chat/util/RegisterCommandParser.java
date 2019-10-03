@@ -1,21 +1,18 @@
 package com.olrox.chat.controller.chat.util;
 
-import org.springframework.stereotype.Component;
-
 import java.util.StringTokenizer;
 
-@Component
-public class MessageParser {
-    public String[] parseRegisterMessage(String text) {
-        String[] params = new String[2];
+public class RegisterCommandParser {
+    private String parsedRole;
+    private String parsedName;
 
+    public void parse(String text) {
         StringTokenizer tokenizer = new StringTokenizer(text, " ");
 
         // Skip /register
         tokenizer.nextToken();
 
-        // Add role
-        params[0] = tokenizer.nextToken();
+        parsedRole = tokenizer.nextToken();
 
         StringBuilder username = new StringBuilder();
 
@@ -23,8 +20,14 @@ public class MessageParser {
             username.append(tokenizer.nextToken());
         }
 
-        params[1] = username.toString();
+        parsedName = username.toString();
+    }
 
-        return params;
+    public String getParsedRole() {
+        return parsedRole;
+    }
+
+    public String getParsedName() {
+        return parsedName;
     }
 }

@@ -20,13 +20,18 @@ public class ChatRestController {
     @Autowired
     private EntityToDtoConverter converter;
 
-    @PostMapping("/register")
-    public UserDetailsDto register(@RequestBody User user) {
-        user.setId(0);
-        user.setConnectionType(ConnectionType.OFFLINE);
-        user.setChatRooms(null);
+    @PostMapping("/register/agent/{name}")
+    public UserDetailsDto registerAgent(@PathVariable String name) {
+        User user = userService.addUnauthorizedUser(ConnectionType.OFFLINE);
+        user = userService.register(user, name, Role.Type.AGENT);
 
-        user = userService.register(user, user.getCurrentRoleType());
+        return converter.toDetailsDto(user);
+    }
+
+    @PostMapping("/register/client/{name}")
+    public UserDetailsDto registerClient(@PathVariable String name) {
+        User user = userService.addUnauthorizedUser(ConnectionType.OFFLINE);
+        user = userService.register(user, name, Role.Type.CLIENT);
 
         return converter.toDetailsDto(user);
     }

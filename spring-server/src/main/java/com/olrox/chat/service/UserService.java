@@ -1,11 +1,12 @@
 package com.olrox.chat.service;
 
 import com.olrox.chat.entity.*;
+import com.olrox.chat.exception.AlreadyRegisteredException;
 import com.olrox.chat.exception.UserNotFoundException;
+import com.olrox.chat.exception.EmptyNameException;
 import com.olrox.chat.repository.UserRepository;
 import com.olrox.chat.service.sending.GeneralSender;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -43,16 +44,22 @@ public class UserService {
         return optionalValue.orElseThrow(() -> new UserNotFoundException("User doesn't exist."));
     }
 
-    public User register(User user, Role.Type role) {
-        user.setCurrentRoleType(role);
+    public User register(User user, String name, Role.Type role) {
+        if (user.isRegistered()) {
+            throw new AlreadyRegisteredException(user);
+        }
+        if (name == null || name.isEmpty()) {
+            throw new EmptyNameException(user);
+        }
 
+        user.setCurrentRoleType(role);
+        user.setName(name);
         user = userRepository.save(user);
 
         Message message = messageService.createInfoMessage(user,
                 "You are successfully registered as "
                         + user.getCurrentRoleType().name().toLowerCase() + " " + user.getName());
         generalSender.send(message);
-
 
         if(role.equals(Role.Type.AGENT)) {
             supportChatRoomService.directUserToChat(user);

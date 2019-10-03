@@ -1,15 +1,14 @@
 package com.olrox.chat.controller.chat.handler;
 
-import com.olrox.chat.controller.chat.util.MessageParser;
 import com.olrox.chat.entity.User;
 import com.olrox.chat.service.MessageService;
 import com.olrox.chat.service.SupportChatRoomService;
 import com.olrox.chat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
-@Component
+@Controller
 @Order(value = 3)
 public class ExitHandler implements CommandHandler {
 
@@ -23,9 +22,6 @@ public class ExitHandler implements CommandHandler {
 
     @Autowired
     private MessageService messageService;
-
-    @Autowired
-    private MessageParser messageParser;
 
     @Override
     public void handleCommand(User user, String data) {

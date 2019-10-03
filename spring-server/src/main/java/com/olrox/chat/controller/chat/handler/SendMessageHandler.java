@@ -1,6 +1,6 @@
 package com.olrox.chat.controller.chat.handler;
 
-import com.olrox.chat.controller.chat.util.MessageParser;
+import com.olrox.chat.controller.chat.util.RegisterCommandParser;
 import com.olrox.chat.entity.Message;
 import com.olrox.chat.entity.MessageType;
 import com.olrox.chat.entity.User;
@@ -11,8 +11,9 @@ import com.olrox.chat.service.sending.GeneralSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
-@Component
+@Controller
 @Order(value = 4)
 public class SendMessageHandler implements CommandHandler {
 
@@ -29,9 +30,6 @@ public class SendMessageHandler implements CommandHandler {
 
     @Autowired
     private GeneralSender generalSender;
-
-    @Autowired
-    private MessageParser messageParser;
 
     @Override
     public void handleCommand(User user, String data) {
