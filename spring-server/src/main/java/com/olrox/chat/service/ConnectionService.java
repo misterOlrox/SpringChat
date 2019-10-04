@@ -17,9 +17,6 @@ public class ConnectionService {
     @Autowired
     private SocketConnectionRepository socketConnectionRepository;
 
-    @Autowired
-    private MessageService messageService;
-
     public void addWebSocketSession(Long userId, Session session) {
         webSocketSessionRepository.put(userId, session);
     }
