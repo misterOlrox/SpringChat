@@ -19,6 +19,8 @@ public class MessageDetailService {
         detail.setStatus(MessageDetail.Status.NOT_RECEIVED);
         detail.setUser(recipient);
 
+        message.addMessageDetail(detail);
+
         return messageDetailRepository.save(detail);
     }
 

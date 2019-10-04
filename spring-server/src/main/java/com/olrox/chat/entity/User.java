@@ -1,6 +1,7 @@
 package com.olrox.chat.entity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -64,5 +65,12 @@ public class User {
 
     public boolean isRegistered() {
         return name != null;
+    }
+
+    public void addChatRoom(ChatRoom chatRoom) {
+        if(getChatRooms() == null) {
+            setChatRooms(new ArrayList<>());
+        }
+        chatRooms.add(chatRoom);
     }
 }

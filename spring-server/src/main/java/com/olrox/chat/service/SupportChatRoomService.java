@@ -1,8 +1,6 @@
 package com.olrox.chat.service;
 
 import com.olrox.chat.entity.*;
-import com.olrox.chat.repository.MessageRepository;
-import com.olrox.chat.repository.RoleRepository;
 import com.olrox.chat.repository.SupportChatRoomRepository;
 import com.olrox.chat.repository.UserRepository;
 import com.olrox.chat.service.sending.GeneralSender;
@@ -21,7 +19,7 @@ public class SupportChatRoomService {
     private SupportChatRoomRepository supportChatRoomRepository;
 
     @Autowired
-    private RoleRepository roleRepository;
+    private RoleService roleService;
 
     @Autowired
     private UserRepository userRepository;
@@ -31,9 +29,6 @@ public class SupportChatRoomService {
 
     @Autowired
     private MessageService messageService;
-
-    @Autowired
-    private MessageRepository messageRepository;
 
     @Autowired
     private MessageDetailService messageDetailService;
@@ -49,17 +44,12 @@ public class SupportChatRoomService {
             dialogue.setState(SupportChatRoom.State.NEED_AGENT);
             dialogue.setClient(creator);
         }
-
         dialogue.setCreationDate(LocalDateTime.now());
         dialogue = supportChatRoomRepository.save(dialogue);
 
-        Role role = new Role();
-        role.setChatRoom(dialogue);
-        role.setUser(creator);
-        role.setType(roleType);
-        roleRepository.save(role);
+        roleService.create(dialogue, creator, roleType);
 
-        creator.getChatRooms().add(dialogue);
+        creator.addChatRoom(dialogue);
         userRepository.save(creator);
 
         return dialogue;
@@ -71,22 +61,24 @@ public class SupportChatRoomService {
 
         Role.Type role = user.getCurrentRoleType();
 
-        switch(role) {
+        switch (role) {
             case CLIENT:
-                chat = supportChatRoomRepository.findFirstByStateOrderByCreationDateAsc(SupportChatRoom.State.NEED_CLIENT);
+                chat = supportChatRoomRepository
+                        .findFirstByStateOrderByCreationDateAsc(SupportChatRoom.State.NEED_CLIENT);
 
-                if(chat == null) {
+                if (chat == null) {
                     chat = createNewChat(user);
                     generalSender.send(messageService.createInfoMessage(user,
                             "We haven't free agents. You can write messages and they will be delivered."));
                 } else {
                     addToChat(user, chat);
                 }
-                return chat;
+                break;
             case AGENT:
-                chat = supportChatRoomRepository.findFirstByStateOrderByCreationDateAsc(SupportChatRoom.State.NEED_AGENT);
+                chat = supportChatRoomRepository
+                        .findFirstByStateOrderByCreationDateAsc(SupportChatRoom.State.NEED_AGENT);
 
-                if(chat == null) {
+                if (chat == null) {
                     chat = createNewChat(user);
                     generalSender.send(messageService.createInfoMessage(user,
                             "There aren't free clients. Wait..."));
@@ -100,29 +92,17 @@ public class SupportChatRoomService {
 
     @Transactional
     public void addToChat(User user, SupportChatRoom chat) {
-        user.getChatRooms().add(chat);
-
+        user.addChatRoom(chat);
         userRepository.save(user);
 
-        // FIXME to roleService
         Role.Type roleInChat = user.getCurrentRoleType();
 
-        Role role = new Role();
-        role.setType(roleInChat);
-        role.setChatRoom(chat);
-        role.setUser(user);
-        roleRepository.save(role);
+        roleService.create(chat, user, roleInChat);
 
-        if(roleInChat == Role.Type.AGENT) {
+        if (roleInChat == Role.Type.AGENT) {
             chat.setAgent(user);
             notifyAboutNewCompanion(chat);
-            for (Message message : chat.getMessageHistory()) {
-                MessageDetail messageDetail = messageDetailService.create(message, user, MessageDetail.Status.NOT_RECEIVED);
-                message.getMessageDetails().add(messageDetail);
-                messageRepository.save(message);
-
-                generalSender.send(message);
-            }
+            sendMessagesToNewAgent(user, chat.getMessageHistory());
         } else {
             chat.setClient(user);
             notifyAboutNewCompanion(chat);
@@ -132,12 +112,22 @@ public class SupportChatRoomService {
         supportChatRoomRepository.save(chat);
     }
 
+    private void sendMessagesToNewAgent(User newAgent, List<Message> messageHistory) {
+        for (Message message : messageHistory) {
+            messageDetailService.create(message, newAgent, MessageDetail.Status.NOT_RECEIVED);
+
+            generalSender.send(message);
+        }
+    }
+
     private void notifyAboutNewCompanion(SupportChatRoom chatRoom) {
         User agent = chatRoom.getAgent();
         User client = chatRoom.getClient();
 
-        Message messageToAgent = messageService.createInfoMessage(agent, "Now you are chatting with client " + client.getName());
-        Message messageToClient = messageService.createInfoMessage(client, "Now you are chatting with agent " + agent.getName());
+        Message messageToAgent = messageService.createInfoMessage(agent,
+                "Now you are chatting with client " + client.getName());
+        Message messageToClient = messageService.createInfoMessage(client,
+                "Now you are chatting with agent " + agent.getName());
 
         generalSender.send(messageToAgent);
         generalSender.send(messageToClient);
@@ -150,7 +140,7 @@ public class SupportChatRoomService {
 
         SupportChatRoom currentRoom;
 
-        if(senderRole == Role.Type.CLIENT) {
+        if (senderRole == Role.Type.CLIENT) {
             currentRoom = supportChatRoomRepository.findFirstByClientEqualsOrderByCreationDateDesc(sender);
         } else {
             currentRoom = supportChatRoomRepository.findFirstByAgentEqualsOrderByCreationDateDesc(sender);
@@ -158,7 +148,7 @@ public class SupportChatRoomService {
 
         message.setChatRoom(currentRoom);
 
-        if(currentRoom == null || currentRoom.getState() == SupportChatRoom.State.CLOSED) {
+        if (currentRoom == null || currentRoom.getState() == SupportChatRoom.State.CLOSED) {
             currentRoom = directUserToChat(sender);
         }
 
@@ -166,17 +156,16 @@ public class SupportChatRoomService {
 
         if (currentRoom.getState() == SupportChatRoom.State.NEED_AGENT) {
             // nothing to do
-        } else if(currentRoom.getState() == SupportChatRoom.State.NEED_CLIENT) {
+        } else if (currentRoom.getState() == SupportChatRoom.State.NEED_CLIENT) {
             Message infoResponse = messageService.createInfoMessage(sender, currentRoom,
                     "There aren't free clients. Wait...");
             addMessageToHistory(currentRoom, infoResponse);
             generalSender.send(infoResponse);
-        } else if(currentRoom.getState() == SupportChatRoom.State.FULL) {
+        } else if (currentRoom.getState() == SupportChatRoom.State.FULL) {
             User recipient = currentRoom.getCompanionFor(senderRole);
-            MessageDetail detail = messageDetailService.create( message,
-                                                                recipient,
-                                                                MessageDetail.Status.NOT_RECEIVED);
-            message.addMessageDetail(detail);
+            messageDetailService.create(message,
+                    recipient,
+                    MessageDetail.Status.NOT_RECEIVED);
             generalSender.send(message);
         }
     }
@@ -184,7 +173,7 @@ public class SupportChatRoomService {
     private void addMessageToHistory(SupportChatRoom chatRoom, Message message) {
         List<Message> messageHistory = chatRoom.getMessageHistory();
 
-        if(messageHistory == null) {
+        if (messageHistory == null) {
             messageHistory = new ArrayList<>();
         }
 

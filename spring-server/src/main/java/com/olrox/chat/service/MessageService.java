@@ -37,10 +37,7 @@ public class MessageService {
         greeting.setSendTime(LocalDateTime.now());
         greeting.setText("Hello ಠ_ಠ");
 
-        MessageDetail detail = messageDetailService.create(greeting, recipient, MessageDetail.Status.NOT_RECEIVED);
-        List<MessageDetail> messageDetails = new ArrayList<>();
-        messageDetails.add(detail);
-        greeting.setMessageDetails(messageDetails);
+        messageDetailService.create(greeting, recipient, MessageDetail.Status.NOT_RECEIVED);
 
         return messageRepository.save(greeting);
     }
@@ -52,12 +49,7 @@ public class MessageService {
         message.setSendTime(LocalDateTime.now());
         message.setText("Print \"/register [agent|client] YourName\" to register");
 
-        MessageDetail detail = messageDetailService.create(message, recipient, MessageDetail.Status.NOT_RECEIVED);
-        List<MessageDetail> messageDetails = new ArrayList<>();
-        messageDetails.add(detail);
-        message.setMessageDetails(messageDetails);
-
-        message.setMessageDetails(messageDetails);
+        messageDetailService.create(message, recipient, MessageDetail.Status.NOT_RECEIVED);
 
         return messageRepository.save(message);
     }
@@ -69,12 +61,7 @@ public class MessageService {
         message.setSendTime(LocalDateTime.now());
         message.setText(text);
 
-        MessageDetail detail = messageDetailService.create(message, recipient, MessageDetail.Status.NOT_RECEIVED);
-        List<MessageDetail> messageDetails = new ArrayList<>();
-        messageDetails.add(detail);
-        message.setMessageDetails(messageDetails);
-
-        message.setMessageDetails(messageDetails);
+        messageDetailService.create(message, recipient, MessageDetail.Status.NOT_RECEIVED);
 
         return messageRepository.save(message);
     }
@@ -86,12 +73,7 @@ public class MessageService {
         message.setSendTime(LocalDateTime.now());
         message.setText(errorDetails);
 
-        MessageDetail detail = messageDetailService.create(message, recipient, MessageDetail.Status.NOT_RECEIVED);
-        List<MessageDetail> messageDetails = new ArrayList<>();
-        messageDetails.add(detail);
-        message.setMessageDetails(messageDetails);
-
-        message.setMessageDetails(messageDetails);
+        messageDetailService.create(message, recipient, MessageDetail.Status.NOT_RECEIVED);
 
         return messageRepository.save(message);
     }
@@ -103,12 +85,7 @@ public class MessageService {
         message.setText(text);
         message.setChatRoom(currentRoom);
 
-        MessageDetail detail = messageDetailService.create(message, sender, MessageDetail.Status.NOT_RECEIVED);
-        List<MessageDetail> messageDetails = new ArrayList<>();
-        messageDetails.add(detail);
-        message.setMessageDetails(messageDetails);
-
-        message.setMessageDetails(messageDetails);
+        messageDetailService.create(message, sender, MessageDetail.Status.NOT_RECEIVED);
 
         return messageRepository.save(message);
     }
