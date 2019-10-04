@@ -14,15 +14,8 @@ public class ChatRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "chat_room_user_table",
-            joinColumns = @JoinColumn(name = "chat_room_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
-    private List<User> userList;
-
     @OneToMany
     private List<Message> messageHistory;
-
     private LocalDateTime creationDate;
 
     public Long getId() {
@@ -31,14 +24,6 @@ public class ChatRoom {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public List<User> getUserList() {
-        return userList;
-    }
-
-    public void setUserList(List<User> userList) {
-        this.userList = userList;
     }
 
     public List<Message> getMessageHistory() {
@@ -55,21 +40,5 @@ public class ChatRoom {
 
     public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ChatRoom chatRoom = (ChatRoom) o;
-        return Objects.equals(id, chatRoom.id) &&
-                Objects.equals(userList, chatRoom.userList) &&
-                Objects.equals(messageHistory, chatRoom.messageHistory) &&
-                Objects.equals(creationDate, chatRoom.creationDate);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, userList, messageHistory, creationDate);
     }
 }

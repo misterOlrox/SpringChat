@@ -4,8 +4,7 @@ import com.olrox.chat.entity.ConnectionType;
 import com.olrox.chat.entity.Message;
 import com.olrox.chat.entity.User;
 import com.olrox.chat.entity.MessageDetail;
-import com.olrox.chat.service.MessageDetailsService;
-import com.olrox.chat.service.MessageService;
+import com.olrox.chat.service.MessageDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +20,7 @@ public class GeneralSender {
     private WebSocketSender webSocketSender;
 
     @Autowired
-    private MessageDetailsService messageDetailService;
+    private MessageDetailService messageDetailService;
 
     public void send(Message message) {
         List<MessageDetail> details = message.getMessageDetails();

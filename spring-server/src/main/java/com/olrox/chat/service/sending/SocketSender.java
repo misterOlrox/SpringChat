@@ -15,7 +15,7 @@ public class SocketSender {
     private SocketConnectionRepository socketConnectionRepository;
 
     public void send(Message message, User sender, User recipient) {
-        String senderName = message.getType() == MessageType.SERVER_INFO ? "Server" : sender.getName();
+        String senderName = sender == null ? "Server" : sender.getName();
         String response = "[" + senderName + "] : " + message.getText() + '\n';
 
         long recipientId = recipient.getId();

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class MessageDetailsService {
+public class MessageDetailService {
 
     @Autowired
     private MessageDetailRepository messageDetailRepository;

@@ -17,7 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Page<User> findAllByCurrentRoleTypeEquals(Role.Type currentRoleType, Pageable pageable);
 
-    @Query("SELECT chat.userList\n" +
+    @Query("SELECT chat.agent\n" +
             "FROM SupportChatRoom as chat\n" +
             "WHERE chat.state='NEED_CLIENT'")
     Page<User> findFreeAgents(Pageable pageable);

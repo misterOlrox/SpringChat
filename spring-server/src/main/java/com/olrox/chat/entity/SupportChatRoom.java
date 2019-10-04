@@ -1,9 +1,6 @@
 package com.olrox.chat.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
@@ -16,8 +13,30 @@ public class SupportChatRoom extends ChatRoom {
         FULL
     }
 
+    @OneToOne
+    private User client;
+
+    @OneToOne
+    private User agent;
+
     @Enumerated(EnumType.STRING)
     private State state;
+
+    public User getClient() {
+        return client;
+    }
+
+    public void setClient(User client) {
+        this.client = client;
+    }
+
+    public User getAgent() {
+        return agent;
+    }
+
+    public void setAgent(User agent) {
+        this.agent = agent;
+    }
 
     public State getState() {
         return state;
@@ -27,17 +46,13 @@ public class SupportChatRoom extends ChatRoom {
         this.state = state;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        SupportChatRoom that = (SupportChatRoom) o;
-        return state == that.state;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), state);
+    public User getCompanionFor(Role.Type role) {
+        if(role == Role.Type.AGENT) {
+            return client;
+        } else if(role == Role.Type.CLIENT){
+            return agent;
+        } else {
+            return null;
+        }
     }
 }

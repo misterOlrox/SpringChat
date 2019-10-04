@@ -38,16 +38,10 @@ public class SendMessageHandler implements CommandHandler {
         if (!user.isRegistered()) {
             Message infoMessage = messageService.createRegisterInfoMessage(user);
             generalSender.send(infoMessage);
-        } else if (user.getChatRooms() == null || user.getChatRooms().isEmpty()) {
-//            Message message = messageService.createInfoMessage(user,
-//                    "You aren't chatting. Your message will not be delivered.");
-//            generalSender.send(message);
-            supportChatRoomService.directUserToChat(user);
-        } else {
-            supportChatRoomService.broadcast(message);
+            return;
         }
 
-
+        supportChatRoomService.broadcast(message);
     }
 
     @Override

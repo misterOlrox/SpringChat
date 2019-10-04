@@ -2,6 +2,7 @@ package com.olrox.chat.entity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -83,5 +84,12 @@ public class Message {
 
     public void setMessageDetails(List<MessageDetail> messageDetails) {
         this.messageDetails = messageDetails;
+    }
+
+    public void addMessageDetail(MessageDetail messageDetail) {
+        if(getMessageDetails() == null) {
+            setMessageDetails(new ArrayList<>());
+        }
+        messageDetails.add(messageDetail);
     }
 }

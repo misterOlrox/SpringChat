@@ -19,7 +19,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private ConnectionType connectionType;
 
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "userList")
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<ChatRoom> chatRooms;
 
     public long getId() {

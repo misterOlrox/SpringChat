@@ -18,7 +18,7 @@ public class WebSocketSender {
     private WebSocketSessionRepository webSocketConnectionRepository;
 
     public void send(Message message, User sender, User recipient) {
-        String senderName = message.getType() != MessageType.USER_TO_CHAT ? "Server" : message.getSender().getName();
+        String senderName = sender == null ? "Server" : message.getSender().getName();
         String data = messageToJson(message, senderName);
 
         long recipientId = recipient.getId();

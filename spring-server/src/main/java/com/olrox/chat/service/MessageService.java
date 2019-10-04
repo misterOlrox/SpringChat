@@ -1,10 +1,6 @@
 package com.olrox.chat.service;
 
-import com.olrox.chat.entity.Message;
-import com.olrox.chat.entity.MessageType;
-import com.olrox.chat.entity.User;
-import com.olrox.chat.entity.MessageDetail;
-import com.olrox.chat.repository.MessageDetailRepository;
+import com.olrox.chat.entity.*;
 import com.olrox.chat.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +17,7 @@ public class MessageService {
     private MessageRepository messageRepository;
 
     @Autowired
-    private MessageDetailsService messageDetailsService;
+    private MessageDetailService messageDetailService;
 
     @Transactional
     public Message createUserMessage(User sender, String text, MessageType type) {
@@ -41,7 +37,7 @@ public class MessageService {
         greeting.setSendTime(LocalDateTime.now());
         greeting.setText("Hello ಠ_ಠ");
 
-        MessageDetail detail = messageDetailsService.create(greeting, recipient, MessageDetail.Status.NOT_RECEIVED);
+        MessageDetail detail = messageDetailService.create(greeting, recipient, MessageDetail.Status.NOT_RECEIVED);
         List<MessageDetail> messageDetails = new ArrayList<>();
         messageDetails.add(detail);
         greeting.setMessageDetails(messageDetails);
@@ -56,7 +52,7 @@ public class MessageService {
         message.setSendTime(LocalDateTime.now());
         message.setText("Print \"/register [agent|client] YourName\" to register");
 
-        MessageDetail detail = messageDetailsService.create(message, recipient, MessageDetail.Status.NOT_RECEIVED);
+        MessageDetail detail = messageDetailService.create(message, recipient, MessageDetail.Status.NOT_RECEIVED);
         List<MessageDetail> messageDetails = new ArrayList<>();
         messageDetails.add(detail);
         message.setMessageDetails(messageDetails);
@@ -73,7 +69,7 @@ public class MessageService {
         message.setSendTime(LocalDateTime.now());
         message.setText(text);
 
-        MessageDetail detail = messageDetailsService.create(message, recipient, MessageDetail.Status.NOT_RECEIVED);
+        MessageDetail detail = messageDetailService.create(message, recipient, MessageDetail.Status.NOT_RECEIVED);
         List<MessageDetail> messageDetails = new ArrayList<>();
         messageDetails.add(detail);
         message.setMessageDetails(messageDetails);
@@ -90,7 +86,24 @@ public class MessageService {
         message.setSendTime(LocalDateTime.now());
         message.setText(errorDetails);
 
-        MessageDetail detail = messageDetailsService.create(message, recipient, MessageDetail.Status.NOT_RECEIVED);
+        MessageDetail detail = messageDetailService.create(message, recipient, MessageDetail.Status.NOT_RECEIVED);
+        List<MessageDetail> messageDetails = new ArrayList<>();
+        messageDetails.add(detail);
+        message.setMessageDetails(messageDetails);
+
+        message.setMessageDetails(messageDetails);
+
+        return messageRepository.save(message);
+    }
+
+    public Message createInfoMessage(User sender, SupportChatRoom currentRoom, String text) {
+        Message message = new Message();
+        message.setType(MessageType.SERVER_INFO);
+        message.setSendTime(LocalDateTime.now());
+        message.setText(text);
+        message.setChatRoom(currentRoom);
+
+        MessageDetail detail = messageDetailService.create(message, sender, MessageDetail.Status.NOT_RECEIVED);
         List<MessageDetail> messageDetails = new ArrayList<>();
         messageDetails.add(detail);
         message.setMessageDetails(messageDetails);
