@@ -2,12 +2,9 @@ package com.olrox.chat.repository;
 
 import com.olrox.chat.entity.SupportChatRoom;
 import com.olrox.chat.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 public interface SupportChatRoomRepository extends JpaRepository<SupportChatRoom, Long> {
 
@@ -17,4 +14,5 @@ public interface SupportChatRoomRepository extends JpaRepository<SupportChatRoom
 
     SupportChatRoom findFirstByClientEqualsOrderByCreationDateDesc(User client);
 
+    Page<SupportChatRoom> findAllByStateIsNot(SupportChatRoom.State state, Pageable pageable);
 }

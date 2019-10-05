@@ -5,6 +5,8 @@ import com.olrox.chat.repository.SupportChatRoomRepository;
 import com.olrox.chat.repository.UserRepository;
 import com.olrox.chat.service.sending.GeneralSender;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,23 +17,27 @@ import java.util.List;
 @Service
 public class SupportChatRoomService {
 
-    @Autowired
-    private SupportChatRoomRepository supportChatRoomRepository;
+    private final SupportChatRoomRepository supportChatRoomRepository;
+    private final UserRepository userRepository;
+    private final GeneralSender generalSender;
+    private final RoleService roleService;
+    private final MessageService messageService;
+    private final MessageDetailService messageDetailService;
 
     @Autowired
-    private RoleService roleService;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private GeneralSender generalSender;
-
-    @Autowired
-    private MessageService messageService;
-
-    @Autowired
-    private MessageDetailService messageDetailService;
+    public SupportChatRoomService(SupportChatRoomRepository supportChatRoomRepository,
+                                  UserRepository userRepository,
+                                  GeneralSender generalSender,
+                                  RoleService roleService,
+                                  MessageService messageService,
+                                  MessageDetailService messageDetailService) {
+        this.supportChatRoomRepository = supportChatRoomRepository;
+        this.userRepository = userRepository;
+        this.generalSender = generalSender;
+        this.roleService = roleService;
+        this.messageService = messageService;
+        this.messageDetailService = messageDetailService;
+    }
 
     private SupportChatRoom createNewChat(User creator) {
         Role.Type roleType = creator.getCurrentRoleType();
@@ -262,5 +268,9 @@ public class SupportChatRoomService {
                         "Type your messages and we will find you an agent."));
             }
         }
+    }
+
+    public Page<SupportChatRoom> getOpenChats(Pageable pageable) {
+        return supportChatRoomRepository.findAllByStateIsNot(SupportChatRoom.State.CLOSED, pageable);
     }
 }

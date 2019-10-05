@@ -41,4 +41,9 @@ public class ChatRestController {
 
         return new ResponseEntity<>(userDto, HttpStatus.CREATED);
     }
+
+//    @PostMapping("/send")
+//    public HttpEntity<MessageDto> send() {
+//
+//    }
 }

@@ -21,7 +21,7 @@ public class AgentsRestController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/")
+    @GetMapping("")
     HttpEntity<Page<UserDto>> allAgents(@RequestParam(defaultValue = "0") Integer pageNumber,
                                         @RequestParam(defaultValue = "10") Integer pageSize) {
 
@@ -34,7 +34,7 @@ public class AgentsRestController {
 
     @GetMapping("/free")
     HttpEntity<Page<UserDto>> freeAgents(@RequestParam(defaultValue = "0") Integer pageNumber,
-                             @RequestParam(defaultValue = "10") Integer pageSize) {
+                                         @RequestParam(defaultValue = "10") Integer pageSize) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<User> page = userService.getFreeAgents(pageable);
