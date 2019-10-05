@@ -71,12 +71,6 @@ public class UserService {
         return user;
     }
 
-    public void sendMessageFromUser(Message message, User user) {
-
-
-
-    }
-
     public List<User> getAllAgents() {
         return userRepository.findAllByCurrentRoleTypeEquals(Role.Type.AGENT);
     }

@@ -15,11 +15,12 @@ id("message").addEventListener("keypress", function (e) {
 
 // FIXME time 05=5, refactor
 function sendMessage(message) {
-    if (message !== "") {
-        webSocket.send(message);
-        id("message").value = "";
-
+    if (message === "") {
+        return
     }
+
+    webSocket.send(message);
+    id("message").value = "";
 
     var author = '<b> ' + 'You' + '</b>';
 

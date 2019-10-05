@@ -1,15 +1,13 @@
 package com.olrox.chat.controller.chat.handler;
 
-import com.olrox.chat.controller.chat.util.RegisterCommandParser;
+import com.olrox.chat.entity.Message;
+import com.olrox.chat.entity.MessageType;
 import com.olrox.chat.entity.User;
 import com.olrox.chat.service.MessageService;
 import com.olrox.chat.service.SupportChatRoomService;
-import com.olrox.chat.service.UserService;
-import com.olrox.chat.service.sending.GeneralSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 
 @Component
 @Order(value = 2)
@@ -18,23 +16,16 @@ public class LeaveHandler implements CommandHandler {
     private final static String regex = "/leave";
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private SupportChatRoomService supportChatRoomService;
 
     @Autowired
     private MessageService messageService;
 
-    @Autowired
-    private GeneralSender generalSender;
-
     @Override
     public void handleCommand(User user, String data) {
+        Message message = messageService.createUserMessage(user, data, MessageType.USER_TO_SERVER);
 
-        generalSender.send(messageService.createInfoMessage(user, "You are trying to leave"));
-
-
+        supportChatRoomService.closeChatBy(user, message);
     }
 
     @Override
