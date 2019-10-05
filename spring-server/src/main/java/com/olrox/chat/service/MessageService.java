@@ -78,6 +78,7 @@ public class MessageService {
         return messageRepository.save(message);
     }
 
+    @Transactional
     public Message createInfoMessage(User sender, SupportChatRoom currentRoom, String text) {
         Message message = new Message();
         message.setType(MessageType.SERVER_INFO);

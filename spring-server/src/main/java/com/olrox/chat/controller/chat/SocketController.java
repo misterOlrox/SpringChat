@@ -32,12 +32,6 @@ public class SocketController {
     private UserService userService;
 
     @Autowired
-    private GeneralSender generalSender;
-
-    @Autowired
-    private MessageService messageService;
-
-    @Autowired
     private List<CommandHandler> commandHandlers;
 
     @PostConstruct
@@ -48,17 +42,20 @@ public class SocketController {
     @OnTcpConnect
     public void connect(Connection connection) {
         User user = userService.addUnauthorizedUser(ConnectionType.SOCKET);
-        Long userId = user.getId();
+        long userId = user.getId();
         connections.put(connection, userId);
-        connectionService.addSocketConnection(userId, connection);
+        connectionService.addSocketConnection(user, connection);
 
-        generalSender.send(messageService.createGreetingMessage(user));
-        generalSender.send(messageService.createRegisterInfoMessage(user));
+        userService.sendFirstMessages(user);
     }
 
     @OnTcpDisconnect
     public void disconnect(Connection connection) {
-
+        Long userId = connections.get(connection);
+        User user = userService.getUserById(userId);
+        userService.handleExit(user);
+        connections.remove(connection);
+        connectionService.closeSocketConnection(user);
     }
 
     @OnTcpMessage
@@ -72,7 +69,5 @@ public class SocketController {
                 return;
             }
         }
-
-        // TODO exception?
     }
 }

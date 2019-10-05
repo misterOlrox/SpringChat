@@ -1,7 +1,9 @@
 package com.olrox.chat.service;
 
+import com.olrox.chat.entity.User;
 import com.olrox.chat.repository.SocketConnectionRepository;
 import com.olrox.chat.repository.WebSocketSessionRepository;
+import com.olrox.chat.service.sending.GeneralSender;
 import com.olrox.chat.tcp.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,11 +19,19 @@ public class ConnectionService {
     @Autowired
     private SocketConnectionRepository socketConnectionRepository;
 
-    public void addWebSocketSession(Long userId, Session session) {
-        webSocketSessionRepository.put(userId, session);
+    public void addWebSocketSession(User user, Session session) {
+        webSocketSessionRepository.put(user.getId(), session);
     }
 
-    public void addSocketConnection(Long userId, Connection connection) {
-        socketConnectionRepository.put(userId, connection);
+    public void addSocketConnection(User user, Connection connection) {
+        socketConnectionRepository.put(user.getId(), connection);
+    }
+
+    public void closeWebSocketSession(User user) {
+        webSocketSessionRepository.remove(user.getId());
+    }
+
+    public void closeSocketConnection(User user) {
+        socketConnectionRepository.remove(user.getId());
     }
 }

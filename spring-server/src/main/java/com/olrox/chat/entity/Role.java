@@ -1,12 +1,12 @@
 package com.olrox.chat.entity;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Table(name = "role_table")
 public class Role {
     public enum Type {
+        UNKNOWN,
         AGENT,
         CLIENT
     }

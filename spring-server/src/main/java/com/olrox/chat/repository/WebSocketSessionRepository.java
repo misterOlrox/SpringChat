@@ -17,4 +17,8 @@ public class WebSocketSessionRepository {
     public Session get(Long userId) {
         return map.get(userId);
     }
+
+    public Session remove(Long userId) {
+        return map.remove(userId);
+    }
 }

@@ -21,4 +21,8 @@ public class RoleService {
 
         return roleRepository.save(role);
     }
+
+    public Role.Type getRoleTypeInChat(User user, ChatRoom chatRoom) {
+        return roleRepository.findRoleType(user, chatRoom);
+    }
 }

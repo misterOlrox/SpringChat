@@ -46,11 +46,13 @@ public class SupportChatRoom extends ChatRoom {
         this.state = state;
     }
 
-    public User getCompanionFor(Role.Type role) {
-        if(role == Role.Type.AGENT) {
-            return client;
-        } else if(role == Role.Type.CLIENT){
+    public User getCompanionFor(User user) {
+        if (user == null || agent == null || client == null) {
+            return null;
+        } else if (user.getId() == client.getId()) {
             return agent;
+        } else if (user.getId() == agent.getId()) {
+            return client;
         } else {
             return null;
         }

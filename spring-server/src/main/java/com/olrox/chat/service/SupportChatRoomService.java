@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -38,10 +37,10 @@ public class SupportChatRoomService {
         Role.Type roleType = creator.getCurrentRoleType();
         SupportChatRoom dialogue = new SupportChatRoom();
 
-        if (roleType.equals(Role.Type.AGENT)) {
+        if (roleType == Role.Type.AGENT) {
             dialogue.setState(SupportChatRoom.State.NEED_CLIENT);
             dialogue.setAgent(creator);
-        } else {
+        } else if (roleType == Role.Type.CLIENT) {
             dialogue.setState(SupportChatRoom.State.NEED_AGENT);
             dialogue.setClient(creator);
         }
@@ -94,7 +93,6 @@ public class SupportChatRoomService {
     @Transactional
     public void addToChat(User user, SupportChatRoom chat) {
         user.addChatRoom(chat);
-        userRepository.save(user);
 
         Role.Type roleInChat = user.getCurrentRoleType();
 
@@ -104,7 +102,7 @@ public class SupportChatRoomService {
             chat.setAgent(user);
             notifyAboutNewCompanion(chat);
             sendMessagesToNewAgent(user, chat.getMessageHistory());
-        } else {
+        } else if (roleInChat == Role.Type.CLIENT) {
             chat.setClient(user);
             notifyAboutNewCompanion(chat);
         }
@@ -115,7 +113,7 @@ public class SupportChatRoomService {
 
     private void sendMessagesToNewAgent(User newAgent, List<Message> messageHistory) {
         for (Message message : messageHistory) {
-            if(message.getType() == MessageType.USER_TO_CHAT) {
+            if (message.getType() == MessageType.USER_TO_CHAT) {
                 messageDetailService.create(message, newAgent, MessageDetail.Status.NOT_RECEIVED);
 
                 generalSender.send(message);
@@ -141,7 +139,7 @@ public class SupportChatRoomService {
         User sender = message.getSender();
         Role.Type senderRole = sender.getCurrentRoleType();
 
-        SupportChatRoom currentRoom  = getLastChatRoom(sender, senderRole);
+        SupportChatRoom currentRoom = getLastChatRoom(sender, senderRole);
 
         message.setChatRoom(currentRoom);
 
@@ -161,7 +159,7 @@ public class SupportChatRoomService {
             addMessageToHistory(currentRoom, infoResponse);
             generalSender.send(infoResponse);
         } else if (currentState == SupportChatRoom.State.FULL) {
-            User recipient = currentRoom.getCompanionFor(senderRole);
+            User recipient = currentRoom.getCompanionFor(sender);
             messageDetailService.create(message,
                     recipient,
                     MessageDetail.Status.NOT_RECEIVED);
@@ -169,54 +167,54 @@ public class SupportChatRoomService {
         }
     }
 
-    private SupportChatRoom getLastChatRoom(User sender, Role.Type senderRole) {
+    public SupportChatRoom getLastChatRoom(User sender, Role.Type senderRole) {
         if (senderRole == Role.Type.CLIENT) {
             return supportChatRoomRepository.findFirstByClientEqualsOrderByCreationDateDesc(sender);
-        } else if(senderRole == Role.Type.AGENT) {
+        } else if (senderRole == Role.Type.AGENT) {
             return supportChatRoomRepository.findFirstByAgentEqualsOrderByCreationDateDesc(sender);
         }
         return null;
     }
 
-    void addMessageToHistory(SupportChatRoom chatRoom, Message message) {
+    @Transactional
+    public void addMessageToHistory(SupportChatRoom chatRoom, Message message) {
         List<Message> messageHistory = chatRoom.getMessageHistory();
 
         if (messageHistory == null) {
-            messageHistory = new ArrayList<>();
+            chatRoom.setMessageHistory(new ArrayList<>());
         }
 
-        messageHistory.add(message);
+        chatRoom.getMessageHistory().add(message);
         supportChatRoomRepository.save(chatRoom);
     }
 
     @Transactional
-    public void closeChatBy(User user, Message leaveMessage) {
-        Role.Type roleType = user.getCurrentRoleType();
-        SupportChatRoom currentRoom  = getLastChatRoom(user, roleType);
+    public void leaveChat(User user, Message leaveMessage) {
+        SupportChatRoom currentRoom = getLastChatRoom(user, user.getCurrentRoleType());
 
-
-        if(currentRoom == null) {
+        if (currentRoom == null) {
             generalSender.send(messageService.createInfoMessage(user, "You aren't chatting."));
             return;
         }
         SupportChatRoom.State currentState = currentRoom.getState();
 
-        if(currentState == SupportChatRoom.State.CLOSED) {
+        if (currentState == SupportChatRoom.State.CLOSED) {
             generalSender.send(messageService.createInfoMessage(user, "You aren't chatting."));
-        } else if(currentState == SupportChatRoom.State.NEED_CLIENT
+        } else if (currentState == SupportChatRoom.State.NEED_CLIENT
                 || currentState == SupportChatRoom.State.NEED_AGENT) {
             addMessageToHistory(currentRoom, leaveMessage);
             Message info = messageService.createInfoMessage(user, "You haven't companion. You can't leave.");
             addMessageToHistory(currentRoom, info);
             generalSender.send(info);
-        } else if(currentState == SupportChatRoom.State.FULL){
+        } else if (currentState == SupportChatRoom.State.FULL) {
             addMessageToHistory(currentRoom, leaveMessage);
-            User companion = currentRoom.getCompanionFor(roleType);
-            Message info = messageService.createInfoMessage(user, currentRoom,
-                    "You left chat with "
-                            + companion.getCurrentRoleType().toString().toLowerCase()
-                            + " " + companion.getName());
+
+            User companion = currentRoom.getCompanionFor(user);
+            Message info = messageService.createInfoMessage(user, currentRoom, "You left chat with "
+                    + companion.getCurrentRoleType().toString().toLowerCase()
+                    + " " + companion.getName());
             generalSender.send(info);
+
             Message infoForCompanion = messageService.createInfoMessage(companion, currentRoom,
                     "Your companion has left the chat.");
             generalSender.send(infoForCompanion);
@@ -230,7 +228,39 @@ public class SupportChatRoomService {
             directUserToChat(agent);
             generalSender.send(messageService.createInfoMessage(client,
                     "Type your messages and we will find you an agent."));
+        }
+    }
 
+    public void closeChat(User initiator, SupportChatRoom currentRoom) {
+        if (currentRoom == null) {
+            return;
+        }
+        SupportChatRoom.State previousState = currentRoom.getState();
+
+        currentRoom.setState(SupportChatRoom.State.CLOSED);
+
+        if (previousState == SupportChatRoom.State.FULL) {
+
+            User companion = currentRoom.getCompanionFor(initiator);
+
+            if (companion != null) {
+                Message infoForCompanion = messageService.createInfoMessage(companion, currentRoom,
+                        "Your companion has left the chat.");
+                generalSender.send(infoForCompanion);
+            }
+
+            supportChatRoomRepository.save(currentRoom);
+
+            User agent = currentRoom.getAgent();
+            User client = currentRoom.getClient();
+
+            if (agent != null) {
+                directUserToChat(agent);
+            }
+            if (client != null) {
+                generalSender.send(messageService.createInfoMessage(client,
+                        "Type your messages and we will find you an agent."));
+            }
         }
     }
 }

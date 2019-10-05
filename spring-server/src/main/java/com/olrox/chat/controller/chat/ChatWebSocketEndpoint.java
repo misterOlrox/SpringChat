@@ -12,10 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import javax.annotation.PostConstruct;
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
+import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.util.List;
 import java.util.Map;
@@ -33,12 +30,6 @@ public class ChatWebSocketEndpoint {
     private UserService userService;
 
     @Autowired
-    private MessageService messageService;
-
-    @Autowired
-    private GeneralSender generalSender;
-
-    @Autowired
     private List<CommandHandler> commandHandlers;
 
     @PostConstruct
@@ -51,15 +42,18 @@ public class ChatWebSocketEndpoint {
         User user = userService.addUnauthorizedUser(ConnectionType.WEBSOCKET);
         long userId = user.getId();
         sessions.put(session, userId);
-        connectionService.addWebSocketSession(userId, session);
+        connectionService.addWebSocketSession(user, session);
 
-        generalSender.send(messageService.createGreetingMessage(user));
-        generalSender.send(messageService.createRegisterInfoMessage(user));
+        userService.sendFirstMessages(user);
     }
 
     @OnClose
     public void onClose(Session session) {
-
+        Long userId = sessions.get(session);
+        User user = userService.getUserById(userId);
+        userService.handleExit(user);
+        sessions.remove(session);
+        connectionService.closeWebSocketSession(user);
     }
 
     @OnMessage
@@ -73,7 +67,5 @@ public class ChatWebSocketEndpoint {
                 return;
             }
         }
-
-        // TODO exception?
     }
 }

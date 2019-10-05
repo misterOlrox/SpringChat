@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +33,7 @@ public class UserService {
     public User addUnauthorizedUser(ConnectionType connectionType) {
         User newUser = new User();
         newUser.setConnectionType(connectionType);
+        newUser.setCurrentRoleType(Role.Type.UNKNOWN);
 
         User savedUser = userRepository.save(newUser);
 
@@ -61,9 +63,9 @@ public class UserService {
                         + user.getCurrentRoleType().name().toLowerCase() + " " + user.getName());
         generalSender.send(message);
 
-        if(role.equals(Role.Type.AGENT)) {
+        if (role.equals(Role.Type.AGENT)) {
             supportChatRoomService.directUserToChat(user);
-        } else if(role.equals(Role.Type.CLIENT)) {
+        } else if (role.equals(Role.Type.CLIENT)) {
             generalSender.send(messageService.createInfoMessage(user,
                     "Type your messages and we will find you an agent."));
         }
@@ -85,5 +87,19 @@ public class UserService {
 
     public Long countFreeAgents() {
         return userRepository.countFreeAgents();
+    }
+
+    public void sendFirstMessages(User user) {
+        generalSender.send(messageService.createGreetingMessage(user));
+        generalSender.send(messageService.createRegisterInfoMessage(user));
+    }
+
+    @Transactional
+    public void handleExit(User user) {
+        SupportChatRoom currentRoom = supportChatRoomService.getLastChatRoom(user, user.getCurrentRoleType());
+        user.setConnectionType(ConnectionType.OFFLINE);
+        user.setCurrentRoleType(Role.Type.UNKNOWN);
+        userRepository.save(user);
+        supportChatRoomService.closeChat(user, currentRoom);
     }
 }

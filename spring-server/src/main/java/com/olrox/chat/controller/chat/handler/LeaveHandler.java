@@ -2,6 +2,7 @@ package com.olrox.chat.controller.chat.handler;
 
 import com.olrox.chat.entity.Message;
 import com.olrox.chat.entity.MessageType;
+import com.olrox.chat.entity.SupportChatRoom;
 import com.olrox.chat.entity.User;
 import com.olrox.chat.service.MessageService;
 import com.olrox.chat.service.SupportChatRoomService;
@@ -25,7 +26,7 @@ public class LeaveHandler implements CommandHandler {
     public void handleCommand(User user, String data) {
         Message message = messageService.createUserMessage(user, data, MessageType.USER_TO_SERVER);
 
-        supportChatRoomService.closeChatBy(user, message);
+        supportChatRoomService.leaveChat(user, message);
     }
 
     @Override

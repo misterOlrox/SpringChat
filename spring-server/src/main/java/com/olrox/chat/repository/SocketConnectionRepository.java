@@ -17,4 +17,8 @@ public class SocketConnectionRepository {
     public Connection get(Long userId) {
         return map.get(userId);
     }
+
+    public Connection remove(Long userId) {
+        return map.remove(userId);
+    }
 }

@@ -18,6 +18,12 @@ function sendMessage(message) {
     if (message === "") {
         return
     }
+    if (message === "/exit") {
+        webSocket.onclose = function () { alert("WebSocket connection closed") };
+        webSocket.close();
+
+        return;
+    }
 
     webSocket.send(message);
     id("message").value = "";
