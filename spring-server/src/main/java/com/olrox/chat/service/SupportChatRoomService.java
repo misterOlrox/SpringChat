@@ -1,6 +1,7 @@
 package com.olrox.chat.service;
 
 import com.olrox.chat.entity.*;
+import com.olrox.chat.exception.ChatRoomNotFoundException;
 import com.olrox.chat.repository.SupportChatRoomRepository;
 import com.olrox.chat.repository.UserRepository;
 import com.olrox.chat.service.sending.GeneralSender;
@@ -13,7 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+// FIXME
 @Service
 public class SupportChatRoomService {
 
@@ -272,5 +275,11 @@ public class SupportChatRoomService {
 
     public Page<SupportChatRoom> getOpenChats(Pageable pageable) {
         return supportChatRoomRepository.findAllByStateIsNot(SupportChatRoom.State.CLOSED, pageable);
+    }
+
+    public SupportChatRoom getRoomById(Long id) {
+        Optional<SupportChatRoom> optional = supportChatRoomRepository.findById(id);
+
+        return optional.orElseThrow(() -> new ChatRoomNotFoundException("There isn't support chat room with id:" + id));
     }
 }

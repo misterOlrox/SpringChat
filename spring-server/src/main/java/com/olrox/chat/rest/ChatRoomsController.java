@@ -1,5 +1,6 @@
 package com.olrox.chat.rest;
 
+import com.olrox.chat.dto.DetailedSupportChatRoomDto;
 import com.olrox.chat.dto.SupportChatRoomDto;
 import com.olrox.chat.entity.SupportChatRoom;
 import com.olrox.chat.service.SupportChatRoomService;
@@ -10,10 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/info/chats")
@@ -31,6 +29,14 @@ public class ChatRoomsController {
         Page<SupportChatRoomDto> dtoPage = page.map(SupportChatRoomDto::new);
 
         return new ResponseEntity<>(dtoPage, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public HttpEntity<DetailedSupportChatRoomDto> chatRoomDetails(@PathVariable Long id) {
+        SupportChatRoom supportChatRoom = supportChatRoomService.getRoomById(id);
+        DetailedSupportChatRoomDto dto = new DetailedSupportChatRoomDto(supportChatRoom);
+
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
 
