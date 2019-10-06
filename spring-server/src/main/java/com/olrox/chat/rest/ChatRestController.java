@@ -29,7 +29,7 @@ public class ChatRestController {
     @Autowired
     private SupportChatRoomService supportChatRoomService;
 
-    @PostMapping("/register")
+    @PostMapping("/user")
     public HttpEntity<DetailedUserDto> register(@RequestBody UserDto userDto) {
         User user = userService.addUnauthorizedUser(ConnectionType.OFFLINE);
         user = userService.register(user, userDto.getName(), userDto.getRole());
@@ -42,7 +42,7 @@ public class ChatRestController {
     @GetMapping("/messages/{userId}")
     public HttpEntity<Page<MessageDto>> getUnreadMessages(@RequestParam(defaultValue = "0") Integer pageNumber,
                                                           @RequestParam(defaultValue = "10") Integer pageSize,
-                                                          @PathVariable(required = true) Long userId) {
+                                                          @PathVariable Long userId) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         User user = userService.getUserById(userId);
@@ -52,8 +52,8 @@ public class ChatRestController {
         return new ResponseEntity<>(dtoPage, HttpStatus.OK);
     }
 
-    @PostMapping("/send")
-    public HttpEntity<MessageDto> send(@RequestBody MessageDto messageDto) {
+    @PostMapping("/message")
+    public HttpEntity<MessageDto> sendMessage(@RequestBody MessageDto messageDto) {
         User sender = userService.getUserById(messageDto.getSenderId());
         Message message = messageService.createUserMessage(sender, messageDto.getText(), MessageType.USER_TO_CHAT);
         Message result = supportChatRoomService.broadcast(message);
@@ -61,5 +61,26 @@ public class ChatRestController {
         MessageDto resultDto = new MessageDto(result);
 
         return new ResponseEntity<>(resultDto, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/message/leaving/{userId}")
+    public HttpEntity<MessageDto> leave(@PathVariable Long userId) {
+        User user = userService.getUserById(userId);
+        Message leaveMessage = messageService.createUserMessage(user, "Leaving message from REST", MessageType.USER_TO_SERVER);
+        Message leaveResponse = supportChatRoomService.leaveChat(user, leaveMessage);
+
+        MessageDto responseDto = new MessageDto(leaveResponse);
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/user/{id}")
+    public HttpEntity<DetailedUserDto> exit(@PathVariable Long id) {
+        User user = userService.getUserById(id);
+        userService.handleExit(user);
+
+        DetailedUserDto responseDto = new DetailedUserDto(user);
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 }

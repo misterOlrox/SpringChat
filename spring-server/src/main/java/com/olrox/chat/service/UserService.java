@@ -69,6 +69,7 @@ public class UserService {
 
     @Transactional
     public void handleExit(User user) {
+        // TODO disconnect online users if invoked from rest
         SupportChatRoom currentRoom = supportChatRoomService.getLastChatRoom(user, user.getCurrentRoleType());
         user.setConnectionType(ConnectionType.OFFLINE);
         user.setCurrentRoleType(Role.Type.UNKNOWN);

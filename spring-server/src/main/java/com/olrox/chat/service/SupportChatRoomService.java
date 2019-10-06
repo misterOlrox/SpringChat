@@ -200,23 +200,27 @@ public class SupportChatRoomService {
     }
 
     @Transactional
-    public void leaveChat(User user, Message leaveMessage) {
+    public Message leaveChat(User user, Message leaveMessage) {
         SupportChatRoom currentRoom = getLastChatRoom(user, user.getCurrentRoleType());
 
         if (currentRoom == null) {
-            generalSender.send(messageService.createInfoMessage(user, "You aren't chatting."));
-            return;
+            Message response = messageService.createInfoMessage(user, "You aren't chatting.");
+            generalSender.send(response);
+            return response;
         }
         SupportChatRoom.State currentState = currentRoom.getState();
 
         if (currentState == SupportChatRoom.State.CLOSED) {
-            generalSender.send(messageService.createInfoMessage(user, "You aren't chatting."));
+            Message response = messageService.createInfoMessage(user, "You aren't chatting.");
+            generalSender.send(response);
+            return response;
         } else if (currentState == SupportChatRoom.State.NEED_CLIENT
                 || currentState == SupportChatRoom.State.NEED_AGENT) {
             addMessageToHistory(currentRoom, leaveMessage);
             Message info = messageService.createInfoMessage(user, "You haven't companion. You can't leave.");
             addMessageToHistory(currentRoom, info);
             generalSender.send(info);
+            return info;
         } else if (currentState == SupportChatRoom.State.FULL) {
             addMessageToHistory(currentRoom, leaveMessage);
 
@@ -239,7 +243,11 @@ public class SupportChatRoomService {
             directUserToChat(agent);
             generalSender.send(messageService.createInfoMessage(client,
                     "Type your messages and we will find you an agent."));
+
+            return info;
         }
+
+        throw new RuntimeException("Something went wrong while leaving room");
     }
 
     public void closeChat(User initiator, SupportChatRoom currentRoom) {
