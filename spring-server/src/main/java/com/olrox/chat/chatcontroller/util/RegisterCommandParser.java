@@ -1,4 +1,4 @@
-package com.olrox.chat.controller.chat.util;
+package com.olrox.chat.chatcontroller.util;
 
 import java.util.StringTokenizer;
 

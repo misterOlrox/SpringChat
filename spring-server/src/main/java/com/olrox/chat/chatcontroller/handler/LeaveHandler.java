@@ -1,8 +1,7 @@
-package com.olrox.chat.controller.chat.handler;
+package com.olrox.chat.chatcontroller.handler;
 
 import com.olrox.chat.entity.Message;
 import com.olrox.chat.entity.MessageType;
-import com.olrox.chat.entity.SupportChatRoom;
 import com.olrox.chat.entity.User;
 import com.olrox.chat.service.MessageService;
 import com.olrox.chat.service.SupportChatRoomService;

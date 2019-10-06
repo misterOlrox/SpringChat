@@ -1,13 +1,11 @@
-package com.olrox.chat.controller.chat;
+package com.olrox.chat.chatcontroller;
 
 import com.olrox.chat.config.CustomSpringConfigurator;
-import com.olrox.chat.controller.chat.handler.CommandHandler;
+import com.olrox.chat.chatcontroller.handler.CommandHandler;
 import com.olrox.chat.entity.ConnectionType;
 import com.olrox.chat.entity.User;
 import com.olrox.chat.service.ConnectionService;
-import com.olrox.chat.service.MessageService;
 import com.olrox.chat.service.UserService;
-import com.olrox.chat.service.sending.GeneralSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 

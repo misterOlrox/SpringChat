@@ -1,6 +1,6 @@
-package com.olrox.chat.controller.chat.handler;
+package com.olrox.chat.chatcontroller.handler;
 
-import com.olrox.chat.controller.chat.util.RegisterCommandParser;
+import com.olrox.chat.chatcontroller.util.RegisterCommandParser;
 import com.olrox.chat.entity.Message;
 import com.olrox.chat.entity.MessageType;
 import com.olrox.chat.entity.Role;

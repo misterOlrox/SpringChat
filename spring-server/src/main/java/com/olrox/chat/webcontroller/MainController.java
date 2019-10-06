@@ -1,4 +1,4 @@
-package com.olrox.chat.controller.web;
+package com.olrox.chat.webcontroller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
