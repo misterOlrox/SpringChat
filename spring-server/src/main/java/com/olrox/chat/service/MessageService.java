@@ -3,6 +3,8 @@ package com.olrox.chat.service;
 import com.olrox.chat.entity.*;
 import com.olrox.chat.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,5 +91,13 @@ public class MessageService {
         messageDetailService.create(message, sender, MessageDetail.Status.NOT_RECEIVED);
 
         return messageRepository.save(message);
+    }
+
+    public Message save(Message message) {
+        return messageRepository.save(message);
+    }
+
+    public Page<Message> getUnreceivedMessages(Long recipientId, Pageable pageable) {
+        return messageRepository.findUnreceivedMessages(recipientId, pageable);
     }
 }

@@ -20,20 +20,20 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Page<User> findAllByCurrentRoleTypeEquals(Role.Type currentRoleType, Pageable pageable);
 
-    @Query("SELECT chat.agent\n" +
-            "FROM SupportChatRoom as chat\n" +
-            "WHERE chat.state='NEED_CLIENT'\n" +
+    @Query("SELECT chat.agent " +
+            "FROM SupportChatRoom as chat " +
+            "WHERE chat.state='NEED_CLIENT' " +
             "ORDER BY chat.creationDate ASC ")
     Page<User> findFreeAgents(Pageable pageable);
 
-    @Query("SELECT count(chat)\n" +
-            "FROM SupportChatRoom as chat\n" +
-            "WHERE chat.state='NEED_CLIENT'")
+    @Query("SELECT count(chat) " +
+            "FROM SupportChatRoom as chat " +
+            "WHERE chat.state='NEED_CLIENT' ")
     Long countFreeAgents();
 
-    @Query("SELECT chat.client\n" +
-            "FROM SupportChatRoom as chat\n" +
-            "WHERE chat.state='NEED_AGENT'\n" +
+    @Query("SELECT chat.client " +
+            "FROM SupportChatRoom as chat " +
+            "WHERE chat.state='NEED_AGENT' " +
             "ORDER BY chat.creationDate ASC ")
     Page<User> findClientsInQueue(Pageable pageable);
 

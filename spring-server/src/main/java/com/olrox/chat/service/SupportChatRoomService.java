@@ -150,8 +150,6 @@ public class SupportChatRoomService {
 
         SupportChatRoom currentRoom = getLastChatRoom(sender, senderRole);
 
-        message.setChatRoom(currentRoom);
-
         if (currentRoom == null || currentRoom.getState() == SupportChatRoom.State.CLOSED) {
             currentRoom = directUserToChat(sender);
         }
@@ -194,6 +192,8 @@ public class SupportChatRoomService {
         }
 
         chatRoom.getMessageHistory().add(message);
+        message.setChatRoom(chatRoom);
+        messageService.save(message);
         supportChatRoomRepository.save(chatRoom);
     }
 

@@ -1,23 +1,40 @@
 package com.olrox.chat.dto;
 
-import com.olrox.chat.entity.ChatRoom;
-import com.olrox.chat.entity.MessageDetail;
-import com.olrox.chat.entity.MessageType;
-import com.olrox.chat.entity.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.olrox.chat.entity.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MessageDto {
 
     private Long id;
     private MessageType type;
-    private ChatRoom chatRoom;
+    private ChatRoomDto chatRoom;
     private String text;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sendTime;
-    private User sender;
-    private List<MessageDetail> messageDetails;
+
+    private UserDto sender;
+    private MessageDetail.Status status;
+
+    public MessageDto(Message message, MessageDetail.Status status) {
+        this.id = message.getId();
+        this.type = message.getType();
+        this.text = message.getText();
+        this.sendTime = message.getSendTime();
+        this.status = status;
+
+        ChatRoom chatRoom = message.getChatRoom();
+        if(chatRoom != null) {
+            this.chatRoom = new ChatRoomDto(chatRoom);
+        }
+
+        User sender = message.getSender();
+        if(sender != null) {
+            this.sender = new UserDto(sender);
+        }
+    }
 
     public Long getId() {
         return id;
@@ -33,6 +50,14 @@ public class MessageDto {
 
     public void setType(MessageType type) {
         this.type = type;
+    }
+
+    public ChatRoomDto getChatRoom() {
+        return chatRoom;
+    }
+
+    public void setChatRoom(ChatRoomDto chatRoom) {
+        this.chatRoom = chatRoom;
     }
 
     public String getText() {
@@ -51,34 +76,19 @@ public class MessageDto {
         this.sendTime = sendTime;
     }
 
-    public ChatRoom getChatRoom() {
-        return chatRoom;
-    }
-
-    public void setChatRoom(ChatRoom chatRoom) {
-        this.chatRoom = chatRoom;
-    }
-
-    public User getSender() {
+    public UserDto getSender() {
         return sender;
     }
 
-    public void setSender(User sender) {
+    public void setSender(UserDto sender) {
         this.sender = sender;
     }
 
-    public List<MessageDetail> getMessageDetails() {
-        return messageDetails;
+    public MessageDetail.Status getStatus() {
+        return status;
     }
 
-    public void setMessageDetails(List<MessageDetail> messageDetails) {
-        this.messageDetails = messageDetails;
-    }
-
-    public void addMessageDetail(MessageDetail messageDetail) {
-        if(getMessageDetails() == null) {
-            setMessageDetails(new ArrayList<>());
-        }
-        messageDetails.add(messageDetail);
+    public void setStatus(MessageDetail.Status status) {
+        this.status = status;
     }
 }
