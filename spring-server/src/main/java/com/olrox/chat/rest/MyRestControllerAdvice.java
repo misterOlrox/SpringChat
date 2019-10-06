@@ -31,6 +31,7 @@ public class MyRestControllerAdvice {
         ExceptionDto response =
                 new ExceptionDto(HttpStatus.BAD_REQUEST.value(), exc.getMessage(), System.currentTimeMillis());
 
+        // TODO remove. Now for debug
         exc.printStackTrace();
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);

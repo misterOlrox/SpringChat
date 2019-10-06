@@ -97,7 +97,7 @@ public class MessageService {
         return messageRepository.save(message);
     }
 
-    public Page<Message> getUnreceivedMessages(Long recipientId, Pageable pageable) {
-        return messageRepository.findUnreceivedMessages(recipientId, pageable);
+    public Page<Message> getUnreceivedMessages(User recipient, Pageable pageable) {
+        return messageRepository.findUnreceivedMessages(recipient, pageable);
     }
 }

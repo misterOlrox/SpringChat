@@ -144,7 +144,7 @@ public class SupportChatRoomService {
     }
 
     @Transactional
-    public void broadcast(Message message) {
+    public Message broadcast(Message message) {
         User sender = message.getSender();
         Role.Type senderRole = sender.getCurrentRoleType();
 
@@ -172,6 +172,8 @@ public class SupportChatRoomService {
                     MessageDetail.Status.NOT_RECEIVED);
             generalSender.send(message);
         }
+
+        return message;
     }
 
     public SupportChatRoom getLastChatRoom(User sender, Role.Type senderRole) {

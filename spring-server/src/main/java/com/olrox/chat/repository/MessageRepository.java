@@ -12,7 +12,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     @Query("select detail.message " +
             "from MessageDetail as detail " +
-            "where detail.user.id=:recipientId " +
+            "where detail.user=:recipient " +
             "and detail.status='NOT_RECEIVED' ")
-    Page<Message> findUnreceivedMessages(@Param(value = "recipientId") Long recipientId, Pageable pageable);
+    Page<Message> findUnreceivedMessages(@Param(value = "recipient") User recipient, Pageable pageable);
 }
