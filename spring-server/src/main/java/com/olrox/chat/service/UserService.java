@@ -40,12 +40,6 @@ public class UserService {
         return savedUser;
     }
 
-    public User getUserById(long id) {
-        Optional<User> optionalValue = userRepository.findById(id);
-
-        return optionalValue.orElseThrow(() -> new UserNotFoundException("User doesn't exist."));
-    }
-
     public User register(User user, String name, Role.Type role) {
         if (user.isRegistered()) {
             throw new AlreadyRegisteredException(user);
@@ -73,6 +67,33 @@ public class UserService {
         return user;
     }
 
+    @Transactional
+    public void handleExit(User user) {
+        SupportChatRoom currentRoom = supportChatRoomService.getLastChatRoom(user, user.getCurrentRoleType());
+        user.setConnectionType(ConnectionType.OFFLINE);
+        user.setCurrentRoleType(Role.Type.UNKNOWN);
+        userRepository.save(user);
+        supportChatRoomService.closeChat(user, currentRoom);
+    }
+
+    public User getUserById(Long id) {
+        Optional<User> optionalValue = userRepository.findById(id);
+
+        return optionalValue.orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found."));
+    }
+
+    public User getAgent(long id) {
+        Optional<User> optionalValue = userRepository.findFirstByIdAndCurrentRoleType(id, Role.Type.AGENT);
+
+        return optionalValue.orElseThrow(() -> new UserNotFoundException("Agent with id " + id + " doesn't exist."));
+    }
+
+    public User getClient(long id) {
+        Optional<User> optionalValue = userRepository.findFirstByIdAndCurrentRoleType(id, Role.Type.CLIENT);
+
+        return optionalValue.orElseThrow(() -> new UserNotFoundException("Client with id " + id + " doesn't exist."));
+    }
+
     public List<User> getAllAgents() {
         return userRepository.findAllByCurrentRoleTypeEquals(Role.Type.AGENT);
     }
@@ -94,12 +115,7 @@ public class UserService {
         generalSender.send(messageService.createRegisterInfoMessage(user));
     }
 
-    @Transactional
-    public void handleExit(User user) {
-        SupportChatRoom currentRoom = supportChatRoomService.getLastChatRoom(user, user.getCurrentRoleType());
-        user.setConnectionType(ConnectionType.OFFLINE);
-        user.setCurrentRoleType(Role.Type.UNKNOWN);
-        userRepository.save(user);
-        supportChatRoomService.closeChat(user, currentRoom);
+    public Page<User> getClientQueue(Pageable pageable) {
+        return userRepository.findClientsInQueue(pageable);
     }
 }

@@ -1,16 +1,17 @@
 package com.olrox.chat.dto;
 
+import com.olrox.chat.entity.Role;
 import com.olrox.chat.entity.User;
 
 public class UserDto {
     private Long id;
     private String name;
-    private String currentRoleType;
+    private Role.Type role;
 
     public UserDto(User user) {
         this.id = user.getId();
         this.name = user.getName();
-        this.currentRoleType = user.getCurrentRoleType().toString().toLowerCase();
+        this.role = user.getCurrentRoleType();
     }
 
     public Long getId() {
@@ -29,11 +30,11 @@ public class UserDto {
         this.name = name;
     }
 
-    public String getCurrentRoleType() {
-        return currentRoleType;
+    public Role.Type getRole() {
+        return role;
     }
 
-    public void setCurrentRoleType(String currentRoleType) {
-        this.currentRoleType = currentRoleType;
+    public void setRole(Role.Type role) {
+        this.role = role;
     }
 }

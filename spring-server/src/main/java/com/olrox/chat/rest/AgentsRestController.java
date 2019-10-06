@@ -45,7 +45,7 @@ public class AgentsRestController {
 
     @GetMapping("/{id}")
     HttpEntity<DetailedUserDto> agentInfo(@PathVariable Long id) {
-        User user = userService.getUserById(id);
+        User user = userService.getAgent(id);
         DetailedUserDto userDto = new DetailedUserDto(user);
 
         return new ResponseEntity<>(userDto, HttpStatus.OK);

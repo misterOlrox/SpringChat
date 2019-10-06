@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/info/chats")
-public class ChatRoomsController {
+public class ChatRoomsRestController {
 
     @Autowired
     private SupportChatRoomService supportChatRoomService;
