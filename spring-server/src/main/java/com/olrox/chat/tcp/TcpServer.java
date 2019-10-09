@@ -4,6 +4,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
 
+import javax.net.ServerSocketFactory;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -25,7 +28,10 @@ public class TcpServer implements Server, Connection.Listener {
                 logger.info("Property tcp.server.port not found. Use default port 1234");
                 port = 1234;
             }
-            serverSocket = new ServerSocket(port);
+            //serverSocket = new ServerSocket(port);
+            ServerSocketFactory socketFactory = SSLServerSocketFactory.getDefault();
+            serverSocket = socketFactory.createServerSocket(port);
+
             logger.info("Server start at port " + port);
         } catch (IOException e) {
             e.printStackTrace();

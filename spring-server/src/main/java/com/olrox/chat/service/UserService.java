@@ -8,7 +8,6 @@ import com.olrox.chat.exception.UserNotFoundException;
 import com.olrox.chat.exception.EmptyNameException;
 import com.olrox.chat.repository.UserRepository;
 import com.olrox.chat.service.sending.GeneralSender;
-import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -59,7 +58,7 @@ public class UserService {
 
         user.setCurrentRoleType(role);
         user.setName(name);
-        user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
+        user.setPassword(password);
         user = userRepository.save(user);
 
         Message message = messageService.createInfoMessage(user,

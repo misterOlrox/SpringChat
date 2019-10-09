@@ -3,6 +3,9 @@ package com.olrox.chat.user;
 import com.olrox.chat.user.thread.ReadThread;
 import com.olrox.chat.user.thread.WriteThread;
 
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -18,12 +21,15 @@ public class Connection {
 
     public void start() {
         try {
-            Socket socket = new Socket(hostname, port);
+            SocketFactory socketFactory = SSLSocketFactory.getDefault();
+            //Socket socket = new Socket(hostname, port);
+            SSLSocket socket = (SSLSocket) socketFactory.createSocket(hostname, port);
 
             System.out.println("Connected to the chat server");
 
             new ReadThread(socket).start();
             new WriteThread(socket).start();
+            socket.startHandshake();
 
         } catch (UnknownHostException ex) {
             System.out.println("Server not found: " + ex.getMessage());
