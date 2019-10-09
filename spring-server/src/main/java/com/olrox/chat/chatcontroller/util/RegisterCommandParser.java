@@ -5,6 +5,7 @@ import java.util.StringTokenizer;
 public class RegisterCommandParser {
     private String parsedRole;
     private String parsedName;
+    private String parsedPassword;
 
     public void parse(String text) {
         StringTokenizer tokenizer = new StringTokenizer(text, " ");
@@ -14,13 +15,9 @@ public class RegisterCommandParser {
 
         parsedRole = tokenizer.nextToken();
 
-        StringBuilder username = new StringBuilder();
+        parsedName = tokenizer.nextToken();
 
-        while (tokenizer.hasMoreTokens()) {
-            username.append(tokenizer.nextToken());
-        }
-
-        parsedName = username.toString();
+        parsedPassword = tokenizer.nextToken();
     }
 
     public String getParsedRole() {
@@ -29,5 +26,9 @@ public class RegisterCommandParser {
 
     public String getParsedName() {
         return parsedName;
+    }
+
+    public String getParsedPassword() {
+        return parsedPassword;
     }
 }

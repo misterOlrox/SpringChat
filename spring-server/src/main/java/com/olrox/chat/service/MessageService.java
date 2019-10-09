@@ -49,7 +49,7 @@ public class MessageService {
         Message message = new Message();
         message.setType(MessageType.SERVER_INFO);
         message.setSendTime(LocalDateTime.now());
-        message.setText("Print \"/register [agent|client] YourName\" to register");
+        message.setText("Print \"/register [agent|client] YourName YourPassword\" to register");
 
         messageDetailService.create(message, recipient, MessageDetail.Status.NOT_RECEIVED);
 

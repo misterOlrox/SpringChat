@@ -2,10 +2,13 @@ package com.olrox.chat.service;
 
 import com.olrox.chat.entity.*;
 import com.olrox.chat.exception.AlreadyRegisteredException;
+import com.olrox.chat.exception.EmptyPasswordException;
+import com.olrox.chat.exception.NameIsBusyException;
 import com.olrox.chat.exception.UserNotFoundException;
 import com.olrox.chat.exception.EmptyNameException;
 import com.olrox.chat.repository.UserRepository;
 import com.olrox.chat.service.sending.GeneralSender;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,16 +43,23 @@ public class UserService {
         return savedUser;
     }
 
-    public User register(User user, String name, Role.Type role) {
+    public User register(User user, Role.Type role, String name, String password) {
         if (user.isRegistered()) {
             throw new AlreadyRegisteredException(user);
         }
         if (name == null || name.isEmpty()) {
             throw new EmptyNameException(user);
         }
+        if(userRepository.findByName(name) != null) {
+            throw new NameIsBusyException("User with name " + name + " already exists.");
+        }
+        if(password == null || password.isEmpty()) {
+            throw new EmptyPasswordException("Password can't be empty.");
+        }
 
         user.setCurrentRoleType(role);
         user.setName(name);
+        user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
         user = userRepository.save(user);
 
         Message message = messageService.createInfoMessage(user,

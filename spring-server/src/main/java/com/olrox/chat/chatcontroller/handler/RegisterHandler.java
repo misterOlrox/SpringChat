@@ -5,12 +5,15 @@ import com.olrox.chat.entity.Message;
 import com.olrox.chat.entity.MessageType;
 import com.olrox.chat.entity.Role;
 import com.olrox.chat.entity.User;
+import com.olrox.chat.exception.NameIsBusyException;
 import com.olrox.chat.service.MessageService;
 import com.olrox.chat.service.UserService;
 import com.olrox.chat.service.sending.GeneralSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
+import java.util.NoSuchElementException;
 
 @Component
 @Order(value = 1)
@@ -42,10 +45,15 @@ public class RegisterHandler implements CommandHandler {
         }
 
         RegisterCommandParser parser = new RegisterCommandParser();
-        parser.parse(data);
+        try {
+            parser.parse(data);
+        } catch (NoSuchElementException ex) {
+            sendWrongSyntaxMessage(user);
+        }
 
         String parsedRole = parser.getParsedRole();
         String parsedName = parser.getParsedName();
+        String parsedPassword = parser.getParsedPassword();
 
         Role.Type role;
         try {
@@ -60,7 +68,16 @@ public class RegisterHandler implements CommandHandler {
             return;
         }
 
-        userService.register(user, parsedName, role);
+        if (parsedPassword == null || parsedPassword.isEmpty()) {
+            sendEmptyPasswordMessage(user);
+            return;
+        }
+
+        try {
+            userService.register(user, role, parsedName, parsedPassword);
+        } catch (NameIsBusyException ex) {
+            generalSender.send(messageService.createErrorMessage(user, ex.getMessage()));
+        }
     }
 
     private void sendAlreadyRegisteredMessage(User user) {
@@ -71,9 +88,25 @@ public class RegisterHandler implements CommandHandler {
         generalSender.send(message);
     }
 
+    private void sendWrongSyntaxMessage(User user) {
+        Message errorMessage = messageService.createErrorMessage(user,
+                "Wrong command syntax");
+        generalSender.send(errorMessage);
+        Message register = messageService.createRegisterInfoMessage(user);
+        generalSender.send(register);
+    }
+
     private void sendEmptyNameMessage(User user) {
         Message errorMessage = messageService.createErrorMessage(user,
                 "You forget to enter your name");
+        generalSender.send(errorMessage);
+        Message register = messageService.createRegisterInfoMessage(user);
+        generalSender.send(register);
+    }
+
+    private void sendEmptyPasswordMessage(User user) {
+        Message errorMessage = messageService.createErrorMessage(user,
+                "You forget to enter your password");
         generalSender.send(errorMessage);
         Message register = messageService.createRegisterInfoMessage(user);
         generalSender.send(register);

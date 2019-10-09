@@ -3,6 +3,7 @@ package com.olrox.chat.rest;
 import com.olrox.chat.dto.DetailedUserDto;
 import com.olrox.chat.dto.MessageDto;
 import com.olrox.chat.dto.UserDto;
+import com.olrox.chat.dto.UserRegisterDto;
 import com.olrox.chat.entity.*;
 import com.olrox.chat.service.MessageService;
 import com.olrox.chat.service.SupportChatRoomService;
@@ -30,9 +31,13 @@ public class ChatRestController {
     private SupportChatRoomService supportChatRoomService;
 
     @PostMapping("/user")
-    public HttpEntity<DetailedUserDto> register(@RequestBody UserDto userDto) {
-        User user = userService.addUnauthorizedUser(ConnectionType.OFFLINE);
-        user = userService.register(user, userDto.getName(), userDto.getRole());
+    public HttpEntity<DetailedUserDto> register(@RequestBody UserRegisterDto userRegisterDto) {
+        User user = new User();
+        user.setConnectionType(ConnectionType.OFFLINE);
+        user = userService.register(user,
+                                    userRegisterDto.getRole(),
+                                    userRegisterDto.getName(),
+                                    userRegisterDto.getPassword());
 
         DetailedUserDto responseUserDto = new DetailedUserDto(user);
 

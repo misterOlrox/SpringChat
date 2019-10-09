@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import javax.annotation.PostConstruct;
-import javax.websocket.*;
+import javax.websocket.OnClose;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +46,9 @@ public class ChatWebSocketEndpoint {
         connectionService.addWebSocketSession(user, session);
 
         userService.sendFirstMessages(user);
+        //System.out.println(session.getRequestParameterMap());
+
+        //System.out.println(socketController.toString());
     }
 
     @OnClose

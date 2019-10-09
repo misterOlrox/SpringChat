@@ -13,6 +13,8 @@ public class User {
 
     private String name;
 
+    private String password;
+
     @Enumerated(EnumType.STRING)
     private Role.Type currentRoleType;
 
@@ -36,6 +38,14 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public ConnectionType getConnectionType() {
