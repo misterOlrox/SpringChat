@@ -13,9 +13,12 @@ import java.util.Optional;
 
 @Component
 final class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
+    private UserService userService;
 
     @Autowired
-    private UserService userService;
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     protected void additionalAuthenticationChecks(final UserDetails d, final UsernamePasswordAuthenticationToken auth) {

@@ -10,8 +10,13 @@ import com.olrox.chat.exception.EmptyNameException;
 import com.olrox.chat.repository.UserRepository;
 import com.olrox.chat.service.sending.GeneralSender;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,19 +25,29 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
+
+    private final UserRepository userRepository;
+    private final MessageService messageService;
+    private final GeneralSender generalSender;
+    private final SupportChatRoomService supportChatRoomService;
+    private final PasswordEncoder passwordEncoder;
+    private final JWTTokenService tokenService;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private MessageService messageService;
-
-    @Autowired
-    private GeneralSender generalSender;
-
-    @Autowired
-    private SupportChatRoomService supportChatRoomService;
+    public UserService(UserRepository userRepository,
+                       MessageService messageService,
+                       GeneralSender generalSender,
+                       SupportChatRoomService supportChatRoomService,
+                       @Lazy PasswordEncoder passwordEncoder,
+                       JWTTokenService tokenService) {
+        this.userRepository = userRepository;
+        this.messageService = messageService;
+        this.generalSender = generalSender;
+        this.supportChatRoomService = supportChatRoomService;
+        this.passwordEncoder = passwordEncoder;
+        this.tokenService = tokenService;
+    }
 
     public User addUnauthorizedUser(ConnectionType connectionType) {
         User newUser = new User();
@@ -60,7 +75,7 @@ public class UserService {
 
         user.setCurrentRoleType(role);
         user.setName(name);
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password));
         user = userRepository.save(user);
 
         Message message = messageService.createInfoMessage(user,
@@ -131,10 +146,11 @@ public class UserService {
         return userRepository.findClientsInQueue(pageable);
     }
 
-
-    @Autowired
-    private JWTTokenService tokenService;
-
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Username not found " + username));
+    }
 
     public String getTokenForRegistered(User user) {
         return tokenService.expiring(ImmutableMap.of("username", user.getUsername()));
