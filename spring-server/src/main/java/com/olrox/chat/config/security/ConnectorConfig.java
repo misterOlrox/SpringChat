@@ -1,4 +1,4 @@
-package com.olrox.chat.config;
+package com.olrox.chat.config.security;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
@@ -29,7 +29,7 @@ public class ConnectorConfig {
     }
 
     private Connector redirectConnector() {
-        Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+        Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
         connector.setScheme("http");
         connector.setPort(8080);
         connector.setSecure(false);

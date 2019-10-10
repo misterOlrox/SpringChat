@@ -1,5 +1,6 @@
 package com.olrox.chat.service;
 
+import com.google.common.collect.ImmutableMap;
 import com.olrox.chat.entity.*;
 import com.olrox.chat.exception.AlreadyRegisteredException;
 import com.olrox.chat.exception.EmptyPasswordException;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -49,7 +51,7 @@ public class UserService {
         if (name == null || name.isEmpty()) {
             throw new EmptyNameException(user);
         }
-        if(userRepository.findByName(name) != null) {
+        if(userRepository.findByName(name).isPresent()) {
             throw new NameIsBusyException("User with name " + name + " already exists.");
         }
         if(password == null || password.isEmpty()) {
@@ -127,5 +129,21 @@ public class UserService {
 
     public Page<User> getClientQueue(Pageable pageable) {
         return userRepository.findClientsInQueue(pageable);
+    }
+
+
+    @Autowired
+    private JWTTokenService tokenService;
+
+
+    public String getTokenForRegistered(User user) {
+        return tokenService.expiring(ImmutableMap.of("username", user.getUsername()));
+    }
+
+    public Optional<User> findByToken(String token) {
+        return Optional
+                .of(tokenService.verify(token))
+                .map(map -> map.get("username"))
+                .flatMap(userRepository::findByName);
     }
 }

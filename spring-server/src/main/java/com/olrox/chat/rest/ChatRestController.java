@@ -2,9 +2,9 @@ package com.olrox.chat.rest;
 
 import com.olrox.chat.dto.DetailedUserDto;
 import com.olrox.chat.dto.MessageDto;
-import com.olrox.chat.dto.UserDto;
-import com.olrox.chat.dto.UserRegisterDto;
-import com.olrox.chat.entity.*;
+import com.olrox.chat.entity.Message;
+import com.olrox.chat.entity.MessageType;
+import com.olrox.chat.entity.User;
 import com.olrox.chat.service.MessageService;
 import com.olrox.chat.service.SupportChatRoomService;
 import com.olrox.chat.service.UserService;
@@ -15,7 +15,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -30,27 +37,13 @@ public class ChatRestController {
     @Autowired
     private SupportChatRoomService supportChatRoomService;
 
-    @PostMapping("/user")
-    public HttpEntity<DetailedUserDto> register(@RequestBody UserRegisterDto userRegisterDto) {
-        User user = new User();
-        user.setConnectionType(ConnectionType.OFFLINE);
-        user = userService.register(user,
-                                    userRegisterDto.getRole(),
-                                    userRegisterDto.getName(),
-                                    userRegisterDto.getPassword());
-
-        DetailedUserDto responseUserDto = new DetailedUserDto(user);
-
-        return new ResponseEntity<>(responseUserDto, HttpStatus.CREATED);
-    }
-
-    @GetMapping("/messages/{userId}")
-    public HttpEntity<Page<MessageDto>> getUnreadMessages(@RequestParam(defaultValue = "0") Integer pageNumber,
-                                                          @RequestParam(defaultValue = "10") Integer pageSize,
-                                                          @PathVariable Long userId) {
+    @GetMapping("/messages")
+    public HttpEntity<Page<MessageDto>> getUnreadMessages(
+            @AuthenticationPrincipal User user,
+            @RequestParam(defaultValue = "0", required = false) Integer pageNumber,
+            @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        User user = userService.getUserById(userId);
         Page<Message> page = messageService.getUnreceivedMessages(user, pageable);
         Page<MessageDto> dtoPage = page.map(MessageDto::new);
 
@@ -58,9 +51,11 @@ public class ChatRestController {
     }
 
     @PostMapping("/message")
-    public HttpEntity<MessageDto> sendMessage(@RequestBody MessageDto messageDto) {
-        User sender = userService.getUserById(messageDto.getSenderId());
-        Message message = messageService.createUserMessage(sender, messageDto.getText(), MessageType.USER_TO_CHAT);
+    public HttpEntity<MessageDto> sendMessage(
+            @AuthenticationPrincipal User user,
+            @RequestBody MessageDto messageDto) {
+
+        Message message = messageService.createUserMessage(user, messageDto.getText(), MessageType.USER_TO_CHAT);
         Message result = supportChatRoomService.broadcast(message);
 
         MessageDto resultDto = new MessageDto(result);
@@ -68,10 +63,12 @@ public class ChatRestController {
         return new ResponseEntity<>(resultDto, HttpStatus.CREATED);
     }
 
-    @PostMapping("/message/leaving/{userId}")
-    public HttpEntity<MessageDto> leave(@PathVariable Long userId) {
-        User user = userService.getUserById(userId);
-        Message leaveMessage = messageService.createUserMessage(user, "Leaving message from REST", MessageType.USER_TO_SERVER);
+    @PostMapping("/message/leaving")
+    public HttpEntity<MessageDto> leave(@AuthenticationPrincipal User user) {
+        Message leaveMessage = messageService.createUserMessage(user,
+                "Leaving message from REST",
+                MessageType.USER_TO_SERVER);
+
         Message leaveResponse = supportChatRoomService.leaveChat(user, leaveMessage);
 
         MessageDto responseDto = new MessageDto(leaveResponse);
@@ -79,9 +76,8 @@ public class ChatRestController {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
-    @DeleteMapping("/user/{id}")
-    public HttpEntity<DetailedUserDto> exit(@PathVariable Long id) {
-        User user = userService.getUserById(id);
+    @PutMapping("/exit")
+    public HttpEntity<DetailedUserDto> exit(@AuthenticationPrincipal User user) {
         userService.handleExit(user);
 
         DetailedUserDto responseDto = new DetailedUserDto(user);
