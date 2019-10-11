@@ -14,4 +14,6 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
             "where role.user=:user and role.chatRoom=:chatRoom")
     Role.Type findRoleType(@Param(value = "user") User user,
                            @Param(value = "chatRoom") ChatRoom chatRoom);
+
+    Role findFirstByUserEqualsOrderByChatRoomDesc(User user);
 }

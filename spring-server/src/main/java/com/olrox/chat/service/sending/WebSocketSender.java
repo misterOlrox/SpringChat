@@ -1,11 +1,9 @@
 package com.olrox.chat.service.sending;
 
 import com.olrox.chat.entity.Message;
-import com.olrox.chat.entity.MessageType;
 import com.olrox.chat.entity.User;
-import com.olrox.chat.repository.WebSocketSessionRepository;
+import com.olrox.chat.repository.ConnectionRepository;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.Session;
@@ -14,15 +12,27 @@ import java.io.IOException;
 @Component
 public class WebSocketSender {
 
-    @Autowired
-    private WebSocketSessionRepository webSocketConnectionRepository;
+    private final ConnectionRepository connectionRepository;
+
+    public WebSocketSender(ConnectionRepository connectionRepository) {
+        this.connectionRepository = connectionRepository;
+    }
 
     public void send(Message message, User sender, User recipient) {
-        String senderName = sender == null ? "Server" : message.getSender().getName();
+
+        String senderName;
+        if(sender == null) {
+            senderName = "Server";
+        } else if(sender.getId() == recipient.getId()) {
+            senderName = "You";
+        } else {
+            senderName = sender.getName();
+        }
+
         String data = messageToJson(message, senderName);
 
         long recipientId = recipient.getId();
-        Session session = webSocketConnectionRepository.get(recipientId);
+        Session session = (Session) connectionRepository.getConnectionBy(recipientId);
 
         try {
             session.getBasicRemote().sendText(data);

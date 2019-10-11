@@ -15,14 +15,9 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @TcpController
 public class SocketController {
-
-    private final Map<Connection, Long> connections = new ConcurrentHashMap<>();
-
     @Autowired
     private ConnectionService connectionService;
 
@@ -41,24 +36,22 @@ public class SocketController {
     public void connect(Connection connection) {
         User user = userService.addUnauthorizedUser(ConnectionType.SOCKET);
         long userId = user.getId();
-        connections.put(connection, userId);
-        connectionService.addSocketConnection(user, connection);
+        connectionService.addConnection(user, connection);
 
         userService.sendFirstMessages(user);
     }
 
     @OnTcpDisconnect
     public void disconnect(Connection connection) {
-        Long userId = connections.get(connection);
+        Long userId = connectionService.getUserIdBy(connection);
         User user = userService.getUserById(userId);
         userService.handleExit(user);
-        connections.remove(connection);
-        connectionService.closeSocketConnection(user);
+        connectionService.closeConnection(user);
     }
 
     @OnTcpMessage
     public void receiveMessage(Connection connection, String data) {
-        Long userId = connections.get(connection);
+        Long userId = connectionService.getUserIdBy(connection);
         User user = userService.getUserById(userId);
 
         for (CommandHandler commandHandler : commandHandlers) {

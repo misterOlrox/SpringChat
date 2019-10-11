@@ -7,6 +7,8 @@ import com.olrox.chat.repository.MessageDetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class MessageDetailService {
 
@@ -16,7 +18,7 @@ public class MessageDetailService {
     public MessageDetail create(Message message, User recipient, MessageDetail.Status status) {
         MessageDetail detail = new MessageDetail();
         detail.setMessage(message);
-        detail.setStatus(MessageDetail.Status.NOT_RECEIVED);
+        detail.setStatus(status);
         detail.setUser(recipient);
 
         message.addMessageDetail(detail);
@@ -27,5 +29,9 @@ public class MessageDetailService {
     public void markAsReceived(MessageDetail detail) {
         detail.setStatus(MessageDetail.Status.RECEIVED);
         messageDetailRepository.save(detail);
+    }
+
+    public List<MessageDetail> findAllFor(User user) {
+        return messageDetailRepository.findAllFor(user);
     }
 }

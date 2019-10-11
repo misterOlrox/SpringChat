@@ -29,6 +29,8 @@ public class MessageService {
         message.setType(type);
         message.setText(text);
 
+        messageDetailService.create(message, sender, MessageDetail.Status.RECEIVED);
+
         return messageRepository.save(message);
     }
 

@@ -1,11 +1,10 @@
 package com.olrox.chat.service;
 
+import com.olrox.chat.entity.ConnectionType;
 import com.olrox.chat.entity.User;
-import com.olrox.chat.repository.SocketConnectionRepository;
-import com.olrox.chat.repository.WebSocketSessionRepository;
-import com.olrox.chat.service.sending.GeneralSender;
+import com.olrox.chat.repository.ConnectionRepository;
+import com.olrox.chat.repository.UserRepository;
 import com.olrox.chat.tcp.Connection;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.websocket.Session;
@@ -13,25 +12,35 @@ import javax.websocket.Session;
 @Service
 public class ConnectionService {
 
-    @Autowired
-    private WebSocketSessionRepository webSocketSessionRepository;
+    private final ConnectionRepository connectionRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private SocketConnectionRepository socketConnectionRepository;
-
-    public void addWebSocketSession(User user, Session session) {
-        webSocketSessionRepository.put(user.getId(), session);
+    public ConnectionService(ConnectionRepository connectionRepository,
+                             UserRepository userRepository) {
+        this.connectionRepository = connectionRepository;
+        this.userRepository = userRepository;
     }
 
-    public void addSocketConnection(User user, Connection connection) {
-        socketConnectionRepository.put(user.getId(), connection);
+    public void addConnection(User user, Object connection) {
+        connectionRepository.save(user.getId(), connection);
     }
 
-    public void closeWebSocketSession(User user) {
-        webSocketSessionRepository.remove(user.getId());
+    public void closeConnection(User user) {
+        connectionRepository.removeBy(user.getId());
     }
 
-    public void closeSocketConnection(User user) {
-        socketConnectionRepository.remove(user.getId());
+    public long getUserIdBy(Object connection) {
+        return connectionRepository.getUserIdBy(connection);
+    }
+
+    public void replaceConnection(User unauthorized, User logged) {
+        Object connection = connectionRepository.replace(unauthorized.getId(), logged.getId());
+        if(connection instanceof Session) {
+            logged.setConnectionType(ConnectionType.WEBSOCKET);
+        } else if(connection instanceof Connection) {
+            logged.setConnectionType(ConnectionType.SOCKET);
+        }
+
+        userRepository.save(logged);
     }
 }

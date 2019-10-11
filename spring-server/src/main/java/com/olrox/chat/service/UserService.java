@@ -2,11 +2,13 @@ package com.olrox.chat.service;
 
 import com.google.common.collect.ImmutableMap;
 import com.olrox.chat.entity.*;
-import com.olrox.chat.exception.AlreadyRegisteredException;
+import com.olrox.chat.exception.AlreadySignedInException;
+import com.olrox.chat.exception.AuthenticationException;
 import com.olrox.chat.exception.EmptyPasswordException;
 import com.olrox.chat.exception.NameIsBusyException;
 import com.olrox.chat.exception.UserNotFoundException;
 import com.olrox.chat.exception.EmptyNameException;
+import com.olrox.chat.repository.RoleRepository;
 import com.olrox.chat.repository.UserRepository;
 import com.olrox.chat.service.sending.GeneralSender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -33,6 +34,7 @@ public class UserService implements UserDetailsService {
     private final SupportChatRoomService supportChatRoomService;
     private final PasswordEncoder passwordEncoder;
     private final JWTTokenService tokenService;
+    private final RoleRepository roleRepository;
 
     @Autowired
     public UserService(UserRepository userRepository,
@@ -40,13 +42,15 @@ public class UserService implements UserDetailsService {
                        GeneralSender generalSender,
                        SupportChatRoomService supportChatRoomService,
                        @Lazy PasswordEncoder passwordEncoder,
-                       JWTTokenService tokenService) {
+                       JWTTokenService tokenService,
+                       RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.messageService = messageService;
         this.generalSender = generalSender;
         this.supportChatRoomService = supportChatRoomService;
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
+        this.roleRepository = roleRepository;
     }
 
     public User addUnauthorizedUser(ConnectionType connectionType) {
@@ -61,7 +65,7 @@ public class UserService implements UserDetailsService {
 
     public User register(User user, Role.Type role, String name, String password) {
         if (user.isRegistered()) {
-            throw new AlreadyRegisteredException(user);
+            throw new AlreadySignedInException(user);
         }
         if (name == null || name.isEmpty()) {
             throw new EmptyNameException(user);
@@ -101,6 +105,7 @@ public class UserService implements UserDetailsService {
         user.setCurrentRoleType(Role.Type.UNKNOWN);
         userRepository.save(user);
         supportChatRoomService.closeChat(user, currentRoom);
+        messageService.createInfoMessage(user, "You exit from our app.");
     }
 
     public User getUserById(Long id) {
@@ -161,5 +166,44 @@ public class UserService implements UserDetailsService {
                 .of(tokenService.verify(token))
                 .map(map -> map.get("username"))
                 .flatMap(userRepository::findByName);
+    }
+
+    public User login(String name, String password) {
+        if(name == null || password == null) {
+            throw new AuthenticationException("Username or password is incorrect.");
+        }
+
+        User user = userRepository.findByName(name)
+                .orElseThrow(() -> new AuthenticationException("Username or password is incorrect."));
+
+        if(!passwordEncoder.matches(password, user.getPassword())) {
+            throw new AuthenticationException("Username or password is incorrect.");
+        }
+
+        if (user.getCurrentRoleType() != Role.Type.UNKNOWN) {
+            throw new AlreadySignedInException(user);
+        }
+
+        Role.Type role = roleRepository.findFirstByUserEqualsOrderByChatRoomDesc(user).getType();
+        user.setCurrentRoleType(role);
+        user = userRepository.save(user);
+
+        Message message = messageService.createInfoMessage(user,
+                "You are successfully logged in as "
+                        + user.getCurrentRoleType().name().toLowerCase() + " " + user.getName());
+        generalSender.send(message);
+
+        if (role.equals(Role.Type.AGENT)) {
+            supportChatRoomService.directUserToChat(user);
+        } else if (role.equals(Role.Type.CLIENT)) {
+            generalSender.send(messageService.createInfoMessage(user,
+                    "Type your messages and we will find you an agent."));
+        }
+
+        return user;
+    }
+
+    public void replaceUnauthorizedUser(User unauthorized, User existing) {
+
     }
 }

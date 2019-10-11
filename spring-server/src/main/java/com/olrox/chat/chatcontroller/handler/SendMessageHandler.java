@@ -11,7 +11,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
-@Order(value = 4)
+@Order(value = 255)
 public class SendMessageHandler implements CommandHandler {
 
     private final static String regex = ".+";
