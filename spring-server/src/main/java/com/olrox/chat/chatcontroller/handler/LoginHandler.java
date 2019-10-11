@@ -3,6 +3,8 @@ package com.olrox.chat.chatcontroller.handler;
 import com.olrox.chat.chatcontroller.util.LoginCommandParser;
 import com.olrox.chat.entity.Message;
 import com.olrox.chat.entity.User;
+import com.olrox.chat.exception.AlreadySignedInException;
+import com.olrox.chat.exception.AuthenticationException;
 import com.olrox.chat.service.ConnectionService;
 import com.olrox.chat.service.MessageService;
 import com.olrox.chat.service.UserService;
@@ -43,7 +45,7 @@ public class LoginHandler implements CommandHandler{
         User loggedUser = user;
         try {
             loggedUser = userService.login(parsedName, parsedPassword);
-        } catch (RuntimeException ex) {
+        } catch (AuthenticationException | AlreadySignedInException ex) {
             Message errorMessage = messageService.createErrorMessage(user,
                     ex.getMessage());
             generalSender.send(errorMessage);

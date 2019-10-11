@@ -65,10 +65,10 @@ public class UserService implements UserDetailsService {
 
     public User register(User user, Role.Type role, String name, String password) {
         if (user.isRegistered()) {
-            throw new AlreadySignedInException(user);
+            throw new AlreadySignedInException("User " + user.getName() + "already signed in");
         }
         if (name == null || name.isEmpty()) {
-            throw new EmptyNameException(user);
+            throw new EmptyNameException();
         }
         if(userRepository.findByName(name).isPresent()) {
             throw new NameIsBusyException("User with name " + name + " already exists.");
@@ -99,7 +99,6 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void handleExit(User user) {
-        // TODO disconnect online users if invoked from rest
         SupportChatRoom currentRoom = supportChatRoomService.getLastChatRoom(user, user.getCurrentRoleType());
         user.setConnectionType(ConnectionType.OFFLINE);
         user.setCurrentRoleType(Role.Type.UNKNOWN);
@@ -165,7 +164,8 @@ public class UserService implements UserDetailsService {
         return Optional
                 .of(tokenService.verify(token))
                 .map(map -> map.get("username"))
-                .flatMap(userRepository::findByName);
+                .flatMap(userRepository::findByName)
+                .filter((x) -> x.getCurrentRoleType() != Role.Type.UNKNOWN);
     }
 
     public User login(String name, String password) {
@@ -181,7 +181,7 @@ public class UserService implements UserDetailsService {
         }
 
         if (user.getCurrentRoleType() != Role.Type.UNKNOWN) {
-            throw new AlreadySignedInException(user);
+            throw new AlreadySignedInException("This user is already signed in.");
         }
 
         Role.Type role = roleRepository.findFirstByUserEqualsOrderByChatRoomDesc(user).getType();
@@ -201,9 +201,5 @@ public class UserService implements UserDetailsService {
         }
 
         return user;
-    }
-
-    public void replaceUnauthorizedUser(User unauthorized, User existing) {
-
     }
 }
