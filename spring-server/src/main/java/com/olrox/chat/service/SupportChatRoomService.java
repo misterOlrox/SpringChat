@@ -5,6 +5,8 @@ import com.olrox.chat.exception.ChatRoomNotFoundException;
 import com.olrox.chat.repository.SupportChatRoomRepository;
 import com.olrox.chat.repository.UserRepository;
 import com.olrox.chat.service.sending.GeneralSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,8 @@ import java.util.Optional;
 // FIXME
 @Service
 public class SupportChatRoomService {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(SupportChatRoomService.class);
 
     private final SupportChatRoomRepository supportChatRoomRepository;
     private final UserRepository userRepository;
@@ -141,6 +145,11 @@ public class SupportChatRoomService {
 
         generalSender.send(messageToAgent);
         generalSender.send(messageToClient);
+
+        LOGGER.info("Agent {} and client {} start chatting in chat {}",
+                agent.getName(),
+                client.getName(),
+                chatRoom.getId());
     }
 
     @Transactional
@@ -243,6 +252,8 @@ public class SupportChatRoomService {
             directUserToChat(agent);
             generalSender.send(messageService.createInfoMessage(client,
                     "Type your messages and we will find you an agent."));
+
+            LOGGER.info("User " + user.getName() + " left chat with " + companion.getName() + ".");
 
             return info;
         }

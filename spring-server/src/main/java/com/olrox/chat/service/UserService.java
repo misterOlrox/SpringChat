@@ -1,16 +1,22 @@
 package com.olrox.chat.service;
 
 import com.google.common.collect.ImmutableMap;
-import com.olrox.chat.entity.*;
+import com.olrox.chat.entity.ConnectionType;
+import com.olrox.chat.entity.Message;
+import com.olrox.chat.entity.Role;
+import com.olrox.chat.entity.SupportChatRoom;
+import com.olrox.chat.entity.User;
 import com.olrox.chat.exception.AlreadySignedInException;
 import com.olrox.chat.exception.AuthenticationException;
+import com.olrox.chat.exception.EmptyNameException;
 import com.olrox.chat.exception.EmptyPasswordException;
 import com.olrox.chat.exception.NameIsBusyException;
 import com.olrox.chat.exception.UserNotFoundException;
-import com.olrox.chat.exception.EmptyNameException;
 import com.olrox.chat.repository.RoleRepository;
 import com.olrox.chat.repository.UserRepository;
 import com.olrox.chat.service.sending.GeneralSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -27,6 +33,8 @@ import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
     private final MessageService messageService;
@@ -70,10 +78,10 @@ public class UserService implements UserDetailsService {
         if (name == null || name.isEmpty()) {
             throw new EmptyNameException();
         }
-        if(userRepository.findByName(name).isPresent()) {
+        if (userRepository.findByName(name).isPresent()) {
             throw new NameIsBusyException("User with name " + name + " already exists.");
         }
-        if(password == null || password.isEmpty()) {
+        if (password == null || password.isEmpty()) {
             throw new EmptyPasswordException("Password can't be empty.");
         }
 
@@ -89,9 +97,11 @@ public class UserService implements UserDetailsService {
 
         if (role.equals(Role.Type.AGENT)) {
             supportChatRoomService.directUserToChat(user);
+            LOGGER.info("Agent " + user.getName() + " registered.");
         } else if (role.equals(Role.Type.CLIENT)) {
             generalSender.send(messageService.createInfoMessage(user,
                     "Type your messages and we will find you an agent."));
+            LOGGER.info("Client " + user.getName() + " registered.");
         }
 
         return user;
@@ -105,6 +115,7 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
         supportChatRoomService.closeChat(user, currentRoom);
         messageService.createInfoMessage(user, "You exit from our app.");
+        LOGGER.info("User " + user.getName() + " logged out.");
     }
 
     public User getUserById(Long id) {
@@ -169,14 +180,14 @@ public class UserService implements UserDetailsService {
     }
 
     public User login(String name, String password) {
-        if(name == null || password == null) {
+        if (name == null || password == null) {
             throw new AuthenticationException("Username or password is incorrect.");
         }
 
         User user = userRepository.findByName(name)
                 .orElseThrow(() -> new AuthenticationException("Username or password is incorrect."));
 
-        if(!passwordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new AuthenticationException("Username or password is incorrect.");
         }
 
@@ -195,9 +206,11 @@ public class UserService implements UserDetailsService {
 
         if (role.equals(Role.Type.AGENT)) {
             supportChatRoomService.directUserToChat(user);
+            LOGGER.info("Agent " + user.getName() + " logged in.");
         } else if (role.equals(Role.Type.CLIENT)) {
             generalSender.send(messageService.createInfoMessage(user,
                     "Type your messages and we will find you an agent."));
+            LOGGER.info("Client " + user.getName() + " logged in.");
         }
 
         return user;
