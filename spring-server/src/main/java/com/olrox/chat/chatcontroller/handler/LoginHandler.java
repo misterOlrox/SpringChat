@@ -45,6 +45,7 @@ public class LoginHandler implements CommandHandler{
         User loggedUser = user;
         try {
             loggedUser = userService.login(parsedName, parsedPassword);
+            userService.handleExit(user);
         } catch (AuthenticationException | AlreadySignedInException ex) {
             Message errorMessage = messageService.createErrorMessage(user,
                     ex.getMessage());
