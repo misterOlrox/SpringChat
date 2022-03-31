@@ -12,7 +12,7 @@
     <artifactId>spring-server</artifactId>
 
     <properties>
-        <boot.version>2.1.7.RELEASE</boot.version>
+        <boot.version>2.5.12</boot.version>
     </properties>
 
     <dependencies>
